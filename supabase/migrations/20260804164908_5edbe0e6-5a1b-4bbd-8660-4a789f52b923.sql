@@ -1,0 +1,1 @@
+DELETE FROM public.leads WHERE name = 'Test Lead' AND phone = '4045550142';
