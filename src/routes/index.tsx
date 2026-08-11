@@ -554,9 +554,9 @@ function Index() {
           </div>
 
           <div className="relative">
-            <div className="bg-ink shadow-[0_24px_60px_-28px_oklch(0.22_0.03_250_/_0.55)]">
+            <div className="overflow-hidden bg-ink shadow-[0_24px_60px_-28px_oklch(0.22_0.03_250_/_0.55)]">
               <video
-                className="block h-auto w-full"
+                className="aspect-[4/5] w-full object-cover sm:aspect-[3/4] lg:aspect-[4/5]"
                 autoPlay
                 muted
                 loop
