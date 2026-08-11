@@ -10,19 +10,78 @@ import { Toaster } from "@/components/ui/sonner";
 import { LeadForm } from "@/components/LeadForm";
 import logoImg from "@/assets/pureflow-logo.png";
 import heroImg from "@/assets/hero-texas.jpg";
-import ductBefore from "@/assets/duct-before.png";
-import ductAfter from "@/assets/duct-after.png";
-import chimneyBefore from "@/assets/chimney-before.png";
-import chimneyAfter from "@/assets/chimney-after.png";
-import { Wind, Flame, Shirt, Phone, Clock, FileText, BadgeCheck, Menu, X } from "lucide-react";
+import ductBefore from "@/assets/duct1.png";
+import ductAfter from "@/assets/duct2.png";
+import ductBefore2 from "@/assets/duct3.png";
+import ductAfter2 from "@/assets/duct4.png";
+import chimneyBefore from "@/assets/chi2.png";
+import chimneyAfter from "@/assets/chi1.png";
+import {
+  Wind,
+  Flame,
+  Shirt,
+  Phone,
+  Clock,
+  FileText,
+  BadgeCheck,
+  Menu,
+  X,
+  Star,
+} from "lucide-react";
 import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/phone";
 
 const navLinks = [
   { href: "#results", label: "Results" },
+  { href: "#reviews", label: "Reviews" },
   { href: "#pricing", label: "Pricing" },
   { href: "#how-it-works", label: "How it works" },
   { href: "#areas", label: "Areas" },
   { href: "#faq", label: "FAQ" },
+] as const;
+
+const reviews = [
+  {
+    name: "Melissa R.",
+    city: "Plano, TX",
+    service: "Air duct cleaning",
+    quote:
+      "Called in the morning and had someone out the same week. The tech showed me photos inside the ducts - night and day difference. House already feels less dusty.",
+  },
+  {
+    name: "James T.",
+    city: "Katy, TX",
+    service: "Chimney sweep",
+    quote:
+      "Straight answer on price before they started. Fireplace was overdue for a clean - they were careful, on time, and left everything tidy.",
+  },
+  {
+    name: "Priya S.",
+    city: "Dallas, TX",
+    service: "Ducts + dryer vent",
+    quote:
+      "I liked that PureFlow explained the $45 visit upfront. No pressure after the quote. We booked the ducts and dryer vent and both came out spotless.",
+  },
+  {
+    name: "Carlos M.",
+    city: "The Woodlands, TX",
+    service: "Air duct cleaning",
+    quote:
+      "Easy phone quote, clear communication, and the crew wore shoe covers. AC airflow feels stronger. Would call again next season.",
+  },
+  {
+    name: "Hannah L.",
+    city: "Frisco, TX",
+    service: "Chimney inspection",
+    quote:
+      "We needed a chimney check before winter. Honest about what was needed and what wasn't. Refreshing compared to other companies that upsell everything.",
+  },
+  {
+    name: "Derek W.",
+    city: "Houston, TX",
+    service: "Air duct cleaning",
+    quote:
+      "Allergy season hits hard here. After the cleaning the musty smell near the vents was gone. Booking by phone was the fastest part.",
+  },
 ] as const;
 
 function trackCallClick(placement: string) {
@@ -418,11 +477,18 @@ function Index() {
             afterAlt="Clean air duct metal after professional cleaning"
           />
           <BeforeAfter
+            label="Air ducts"
+            before={ductBefore2}
+            after={ductAfter2}
+            beforeAlt="Heavily soiled air duct interior before professional cleaning"
+            afterAlt="Spotless galvanized air duct after professional cleaning"
+          />
+          <BeforeAfter
             label="Fireplace & chimney"
             before={chimneyBefore}
             after={chimneyAfter}
-            beforeAlt="Soot-covered fireplace and chimney before cleaning"
-            afterAlt="Clean brick fireplace after chimney sweep"
+            beforeAlt="Chimney flue with heavy creosote buildup during cleaning"
+            afterAlt="Clean chimney flue after professional sweep"
           />
         </div>
         <div className="mt-8 sm:mt-10">
@@ -433,6 +499,64 @@ function Index() {
             <Phone className="h-5 w-5" />
             Call for your free quote
           </CallButton>
+        </div>
+      </section>
+
+      {/* Reviews */}
+      <section id="reviews" className="scroll-mt-24 border-y border-border bg-mist sm:scroll-mt-28">
+        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-5 sm:py-20">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div className="max-w-xl">
+              <h2 className="font-display text-[1.75rem] font-bold text-foreground sm:text-4xl">
+                Homeowners who called PureFlow
+              </h2>
+              <p className="mt-3 text-sm text-muted-foreground sm:text-base">
+                What Dallas and Houston area homeowners say after duct and chimney service.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 text-foreground">
+              <div className="flex gap-0.5" aria-hidden>
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} className="h-4 w-4 fill-primary text-primary" />
+                ))}
+              </div>
+              <p className="text-sm font-semibold">5-star experiences · TX</p>
+            </div>
+          </div>
+
+          <div className="-mx-4 mt-8 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:mt-10 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 lg:grid-cols-3 lg:pb-0">
+            {reviews.map((review) => (
+              <article
+                key={`${review.name}-${review.city}`}
+                className="w-[85%] shrink-0 snap-start border border-border bg-background p-5 sm:w-auto sm:p-6"
+              >
+                <div className="flex gap-0.5" aria-label="5 out of 5 stars">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className="h-3.5 w-3.5 fill-primary text-primary" />
+                  ))}
+                </div>
+                <p className="mt-4 text-sm leading-relaxed text-foreground/90">
+                  &ldquo;{review.quote}&rdquo;
+                </p>
+                <div className="mt-5 border-t border-border pt-4">
+                  <p className="font-semibold text-foreground">{review.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {review.city} · {review.service}
+                  </p>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div className="mt-8 sm:mt-10">
+            <CallButton
+              placement="reviews"
+              className="inline-flex w-full items-center justify-center gap-2 bg-primary px-7 py-4 text-base font-bold text-primary-foreground transition-colors hover:bg-ink sm:w-auto"
+            >
+              <Phone className="h-5 w-5" />
+              Join them - call for a free quote
+            </CallButton>
+          </div>
         </div>
       </section>
 
