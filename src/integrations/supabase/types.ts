@@ -14,6 +14,92 @@ export type Database = {
   }
   public: {
     Tables: {
+      blocked_ips: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          ip_address: string
+          reason: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          ip_address: string
+          reason?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          ip_address?: string
+          reason?: string | null
+        }
+        Relationships: []
+      }
+      call_clicks: {
+        Row: {
+          city: string | null
+          country: string | null
+          created_at: string
+          device: string | null
+          gclid: string | null
+          id: string
+          page_path: string | null
+          placement: string
+          region: string | null
+          session_id: string | null
+          user_agent: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device?: string | null
+          gclid?: string | null
+          id?: string
+          page_path?: string | null
+          placement: string
+          region?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device?: string | null
+          gclid?: string | null
+          id?: string
+          page_path?: string | null
+          placement?: string
+          region?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "call_clicks_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           created_at: string
@@ -41,6 +127,66 @@ export type Database = {
           service?: string
           source?: string | null
           zip?: string
+        }
+        Relationships: []
+      }
+      sessions: {
+        Row: {
+          city: string | null
+          country: string | null
+          device: string | null
+          gclid: string | null
+          id: string
+          ip_address: string | null
+          landing_path: string | null
+          last_seen_at: string
+          page_views: number
+          referrer: string | null
+          region: string | null
+          started_at: string
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          device?: string | null
+          gclid?: string | null
+          id: string
+          ip_address?: string | null
+          landing_path?: string | null
+          last_seen_at?: string
+          page_views?: number
+          referrer?: string | null
+          region?: string | null
+          started_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          device?: string | null
+          gclid?: string | null
+          id?: string
+          ip_address?: string | null
+          landing_path?: string | null
+          last_seen_at?: string
+          page_views?: number
+          referrer?: string | null
+          region?: string | null
+          started_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Relationships: []
       }

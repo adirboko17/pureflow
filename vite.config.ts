@@ -5,7 +5,9 @@
 //     React/TanStack dedupe, error logger plugins, and sandbox detection (port/host/strictPort).
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import path from "node:path";
-import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+// Import the ESM build explicitly. The package "main" points at index.cjs, which
+// require()s vite and hits ERR_REQUIRE_CYCLE_MODULE when vite.config also imports vite.
+import { defineConfig } from "@lovable.dev/vite-tanstack-config/dist/index.js";
 import { loadEnv } from "vite";
 
 const serverEnv = loadEnv(process.env['NODE_ENV'] ?? "development", process.cwd(), "");
