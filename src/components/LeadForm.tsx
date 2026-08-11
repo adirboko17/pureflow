@@ -108,7 +108,7 @@ export function LeadForm({ id }: { id?: string; variant?: "light" | "dark" }) {
               name="phone"
               type="tel"
               required
-              placeholder="(214) 555-0147"
+              placeholder="(346) 296-0176"
               className={fieldClass}
             />
           </div>

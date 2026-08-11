@@ -207,7 +207,7 @@ export const Route = createFileRoute("/")({
           "@type": "Organization",
           name: "PureFlow Air & Chimney",
           url: "https://pureflow-services.com/",
-          telephone: "+1-214-555-0147",
+          telephone: "+1-346-296-0176",
           description:
             "Independent referral service connecting Dallas and Houston homeowners with licensed air duct cleaning, dryer vent and chimney providers.",
           email: "pureflowcostumerservices@gmail.com",
@@ -226,7 +226,7 @@ export const Route = createFileRoute("/")({
             "@type": "Organization",
             name: "PureFlow Air & Chimney",
             url: "https://pureflow-services.com/",
-            telephone: "+1-214-555-0147",
+            telephone: "+1-346-296-0176",
           },
           areaServed: areaServedSchema,
           serviceType: [
