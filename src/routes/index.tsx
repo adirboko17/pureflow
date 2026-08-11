@@ -160,6 +160,9 @@ export const Route = createFileRoute("/")({
         as: "image",
         href: heroImage.preload,
         type: heroImage.preloadType,
+        fetchPriority: "high",
+        imageSrcSet: heroImage.avif,
+        imageSizes: heroImage.sizes,
       },
     ],
   }),
@@ -470,13 +473,15 @@ function Index() {
       {/* Full-bleed hero - one composition */}
       <section className="relative min-h-[min(72dvh,560px)] overflow-hidden text-ink-foreground sm:min-h-[88vh]">
         <picture>
-          <source type="image/avif" srcSet={heroImage.avif} sizes="100vw" />
-          <source type="image/webp" srcSet={heroImage.webp} sizes="100vw" />
+          <source type="image/avif" srcSet={heroImage.avif} sizes={heroImage.sizes} />
+          <source type="image/webp" srcSet={heroImage.webp} sizes={heroImage.sizes} />
           <img
             src={heroImage.src}
             alt="Technician cleaning air vents in a Texas home"
             width={heroImage.width}
             height={heroImage.height}
+            sizes={heroImage.sizes}
+            srcSet={heroImage.webp}
             className="absolute inset-0 h-full w-full object-cover object-[72%_center] sm:object-center"
             fetchPriority="high"
             decoding="async"

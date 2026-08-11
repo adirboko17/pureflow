@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SessionTracker } from "@/components/SessionTracker";
 import { SITE_OG_IMAGE_URL } from "@/lib/site";
+import { CRITICAL_CSS } from "@/lib/critical-css";
 
 function NotFoundComponent() {
   return (
@@ -106,13 +107,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { name: "twitter:image", content: SITE_OG_IMAGE_URL },
     ],
-    links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-      { rel: "icon", href: "/favicon.png", type: "image/png" },
-    ],
+    links: [{ rel: "icon", href: "/favicon.png", type: "image/png" }],
     scripts: [
       { src: "https://www.googletagmanager.com/gtag/js?id=AW-18371071580", async: true },
       {
@@ -127,28 +122,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
-const GOOGLE_FONTS_HREF =
-  "https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Sora:wght@700;800&display=swap";
-
 function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* media=print + onLoad avoids render-blocking; swap restores styles for screen */}
-        <link
-          rel="stylesheet"
-          href={GOOGLE_FONTS_HREF}
-          media="print"
-          onLoad={(event) => {
-            (event.currentTarget as HTMLLinkElement).media = "all";
+        <style dangerouslySetInnerHTML={{ __html: CRITICAL_CSS }} />
+        {/* HeadContent first so homepage hero preload (fetchpriority=high) starts ASAP. */}
+        <HeadContent />
+        {/* Non-blocking full CSS: media=print until load. Inline onload (not React onLoad)
+            so it works before hydration — React onLoad can miss a cached/early load. */}
+        <link id="app-css" rel="stylesheet" href={appCss} media="print" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var l=document.getElementById("app-css");if(!l)return;function r(){l.media="all"}if(l.sheet)r();else l.onload=r;})();`,
           }}
         />
         <noscript>
-          <link rel="stylesheet" href={GOOGLE_FONTS_HREF} />
+          <link rel="stylesheet" href={appCss} />
         </noscript>
-        <HeadContent />
       </head>
       <body>
         {children}

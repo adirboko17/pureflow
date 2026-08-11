@@ -3,9 +3,12 @@
 export const heroImage = {
   avif: "/images/hero-768.avif 768w, /images/hero-1280.avif 1280w, /images/hero-1536.avif 1536w",
   webp: "/images/hero-768.webp 768w, /images/hero-1280.webp 1280w, /images/hero-1536.webp 1536w",
-  src: "/images/hero-1280.webp",
-  width: 1280,
-  height: 853,
+  /** Fallback matches the preloaded mobile LCP candidate (768×512). */
+  src: "/images/hero-768.webp",
+  /** Intrinsic size of the LCP file (hero-768.*); aspect ratio matches larger variants. */
+  width: 768,
+  height: 512,
+  sizes: "100vw",
   /** Preload the mobile LCP candidate. */
   preload: "/images/hero-768.avif",
   preloadType: "image/avif" as const,
