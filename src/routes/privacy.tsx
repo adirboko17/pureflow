@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SITE_OG_IMAGE_URL, SITE_ORIGIN } from "@/lib/site";
 
 export const Route = createFileRoute("/privacy")({
   head: () => ({
@@ -7,14 +8,25 @@ export const Route = createFileRoute("/privacy")({
       {
         name: "description",
         content:
-          "How PureFlow Air & Chimney collects, uses and shares the information you submit through our Greater Houston quote request form.",
+          "How PureFlow Air & Chimney collects, uses and shares information from Greater Houston quote requests and callback forms.",
       },
       { property: "og:title", content: "Privacy Policy | PureFlow Air & Chimney" },
       {
         property: "og:description",
         content: "How we handle information submitted through our quote request form.",
       },
+      { property: "og:url", content: `${SITE_ORIGIN}/privacy` },
+      { property: "og:image", content: SITE_OG_IMAGE_URL },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Privacy Policy | PureFlow Air & Chimney" },
+      {
+        name: "twitter:description",
+        content: "How we handle information submitted through our quote request form.",
+      },
+      { name: "twitter:image", content: SITE_OG_IMAGE_URL },
     ],
+    links: [{ rel: "canonical", href: `${SITE_ORIGIN}/privacy` }],
   }),
   component: Privacy,
 });

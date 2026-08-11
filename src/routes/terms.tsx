@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { SITE_OG_IMAGE_URL, SITE_ORIGIN } from "@/lib/site";
 
 export const Route = createFileRoute("/terms")({
   head: () => ({
@@ -7,14 +8,25 @@ export const Route = createFileRoute("/terms")({
       {
         name: "description",
         content:
-          "Terms for using the PureFlow Air & Chimney referral platform connecting Greater Houston homeowners with licensed duct and chimney providers.",
+          "Terms for using PureFlow Air & Chimney, the Greater Houston referral platform for duct and chimney service providers.",
       },
       { property: "og:title", content: "Terms of Service | PureFlow Air & Chimney" },
       {
         property: "og:description",
         content: "Terms for using our Greater Houston home service referral platform.",
       },
+      { property: "og:url", content: `${SITE_ORIGIN}/terms` },
+      { property: "og:image", content: SITE_OG_IMAGE_URL },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Terms of Service | PureFlow Air & Chimney" },
+      {
+        name: "twitter:description",
+        content: "Terms for using our Greater Houston home service referral platform.",
+      },
+      { name: "twitter:image", content: SITE_OG_IMAGE_URL },
     ],
+    links: [{ rel: "canonical", href: `${SITE_ORIGIN}/terms` }],
   }),
   component: Terms,
 });

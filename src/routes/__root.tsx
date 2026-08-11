@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SessionTracker } from "@/components/SessionTracker";
+import { SITE_OG_IMAGE_URL } from "@/lib/site";
 
 function NotFoundComponent() {
   return (
@@ -82,7 +83,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Call PureFlow 24/7 for air duct & chimney cleaning in Houston and surrounding areas. Free phone quote, clear starting prices, $29 on-site visit, written quote before work.",
+          "Call PureFlow 24/7 for air duct & chimney cleaning in Houston and nearby. Free phone quote, clear starting prices, $29 visit, written quote before work.",
       },
       { name: "author", content: "PureFlow Air & Chimney" },
       { name: "google-site-verification", content: "35pHNNttUpRVYXDEvlqlz5EZN6JF376J2NO6FD8JXiA" },
@@ -93,6 +94,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Call 24/7 for a free phone quote. Licensed local providers for air ducts, dryer vents & chimney sweeps in Greater Houston.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: SITE_OG_IMAGE_URL },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Houston Air Duct & Chimney Cleaning | PureFlow" },
       {
@@ -100,8 +104,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Call 24/7 for a free phone quote. Licensed local providers for air ducts, dryer vents & chimney sweeps in Greater Houston.",
       },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ddcd32fa-bfc7-4308-89f1-809049c7825e/id-preview-60688c59--cb8820b5-8d43-4c77-af67-03e5fc89ac32.lovable.app-1785845660480.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ddcd32fa-bfc7-4308-89f1-809049c7825e/id-preview-60688c59--cb8820b5-8d43-4c77-af67-03e5fc89ac32.lovable.app-1785845660480.png" },
+      { name: "twitter:image", content: SITE_OG_IMAGE_URL },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },

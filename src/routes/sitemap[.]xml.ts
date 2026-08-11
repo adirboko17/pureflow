@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
-
-const BASE_URL = "https://pureflow-services.com";
+import { SITE_ORIGIN } from "@/lib/site";
 
 interface SitemapEntry {
   path: string;
+  lastmod: string;
   changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
   priority?: string;
 }
@@ -14,15 +14,16 @@ export const Route = createFileRoute("/sitemap.xml")({
     handlers: {
       GET: async () => {
         const entries: SitemapEntry[] = [
-          { path: "/", changefreq: "weekly", priority: "1.0" },
-          { path: "/privacy", changefreq: "yearly", priority: "0.3" },
-          { path: "/terms", changefreq: "yearly", priority: "0.3" },
+          { path: "/", lastmod: "2026-08-12", changefreq: "weekly", priority: "1.0" },
+          { path: "/privacy", lastmod: "2026-08-12", changefreq: "yearly", priority: "0.3" },
+          { path: "/terms", lastmod: "2026-08-12", changefreq: "yearly", priority: "0.3" },
         ];
 
         const urls = entries.map((e) =>
           [
             `  <url>`,
-            `    <loc>${BASE_URL}${e.path}</loc>`,
+            `    <loc>${SITE_ORIGIN}${e.path}</loc>`,
+            `    <lastmod>${e.lastmod}</lastmod>`,
             e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
             e.priority ? `    <priority>${e.priority}</priority>` : null,
             `  </url>`,

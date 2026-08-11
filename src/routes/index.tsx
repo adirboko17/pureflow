@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Accordion,
@@ -30,6 +30,13 @@ import {
 } from "lucide-react";
 import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/phone";
 import { reportCallClick } from "@/lib/analytics-client";
+import {
+  SITE_LOGO_URL,
+  SITE_NAME,
+  SITE_OG_IMAGE_URL,
+  SITE_ORIGIN,
+  SITE_PHONE_E164,
+} from "@/lib/site";
 
 const navLinks = [
   { href: "#results", label: "Results" },
@@ -64,12 +71,22 @@ const serviceAreas = [
   },
 ] as const;
 
-const areaServedSchema = serviceAreas.flatMap((area) =>
+const areaServedCities = serviceAreas.flatMap((area) =>
   area.cities.map((city) => ({
     "@type": "City" as const,
     name: `${city}, Texas`,
   })),
 );
+
+const houstonGeoCircle = {
+  "@type": "GeoCircle" as const,
+  geoMidpoint: {
+    "@type": "GeoCoordinates" as const,
+    latitude: 29.7604,
+    longitude: -95.3698,
+  },
+  geoRadius: "72420",
+};
 
 function trackCallClick(placement: string) {
   try {
@@ -88,83 +105,6 @@ function trackCallClick(placement: string) {
   }
   reportCallClick(placement);
 }
-
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      {
-        title: "Houston Air Duct & Chimney Cleaning | PureFlow",
-      },
-      {
-        name: "description",
-        content:
-          "Call PureFlow 24/7 for air duct & chimney cleaning in Houston and surrounding areas. Free phone quote, clear starting prices, $29 on-site visit, written quote before work.",
-      },
-      {
-        property: "og:title",
-        content: "Houston Air Duct & Chimney Cleaning | PureFlow",
-      },
-      {
-        property: "og:description",
-        content:
-          "Call 24/7 for a free phone quote. Licensed local providers for air ducts, dryer vents & chimney sweeps in Greater Houston.",
-      },
-      { property: "og:url", content: "https://pureflow-services.com/" },
-    ],
-    links: [{ rel: "canonical", href: "https://pureflow-services.com/" }],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          name: "PureFlow Air & Chimney",
-          url: "https://pureflow-services.com/",
-          telephone: "+1-346-296-0176",
-          description:
-            "Independent referral service connecting Greater Houston homeowners with licensed air duct cleaning, dryer vent and chimney providers.",
-          email: "pureflowcostumerservices@gmail.com",
-          areaServed: areaServedSchema,
-        }),
-      },
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Service",
-          name: "Air duct, dryer vent & chimney cleaning",
-          description:
-            "Referral service matching Greater Houston homeowners with licensed air duct, dryer vent, and chimney cleaning providers.",
-          provider: {
-            "@type": "Organization",
-            name: "PureFlow Air & Chimney",
-            url: "https://pureflow-services.com/",
-            telephone: "+1-346-296-0176",
-          },
-          areaServed: areaServedSchema,
-          serviceType: [
-            "Air duct cleaning",
-            "Dryer vent cleaning",
-            "Chimney cleaning",
-          ],
-        }),
-      },
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: faqs.map((f) => ({
-            "@type": "Question",
-            name: f.q,
-            acceptedAnswer: { "@type": "Answer", text: f.a },
-          })),
-        }),
-      },
-    ],
-  }),
-  component: Index,
-});
 
 const services = [
   {
@@ -214,6 +154,161 @@ const faqs = [
   },
 ];
 
+export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      {
+        title: "Houston Air Duct & Chimney Cleaning | PureFlow",
+      },
+      {
+        name: "description",
+        content:
+          "Call PureFlow 24/7 for air duct & chimney cleaning in Houston and nearby. Free phone quote, clear starting prices, $29 visit, written quote before work.",
+      },
+      {
+        property: "og:title",
+        content: "Houston Air Duct & Chimney Cleaning | PureFlow",
+      },
+      {
+        property: "og:description",
+        content:
+          "Call 24/7 for a free phone quote. Licensed local providers for air ducts, dryer vents & chimney sweeps in Greater Houston.",
+      },
+      { property: "og:url", content: `${SITE_ORIGIN}/` },
+      { property: "og:image", content: SITE_OG_IMAGE_URL },
+    ],
+    links: [{ rel: "canonical", href: `${SITE_ORIGIN}/` }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "HomeAndConstructionBusiness",
+          name: SITE_NAME,
+          url: `${SITE_ORIGIN}/`,
+          telephone: SITE_PHONE_E164,
+          image: SITE_LOGO_URL,
+          logo: SITE_LOGO_URL,
+          description:
+            "Independent referral service connecting Greater Houston homeowners with licensed air duct cleaning, dryer vent and chimney providers. PureFlow does not perform the work.",
+          email: "pureflowcostumerservices@gmail.com",
+          priceRange: "$$",
+          areaServed: [houstonGeoCircle, ...areaServedCities],
+          openingHoursSpecification: {
+            "@type": "OpeningHoursSpecification",
+            dayOfWeek: [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday",
+            ],
+            opens: "00:00",
+            closes: "23:59",
+          },
+          hasOfferCatalog: {
+            "@type": "OfferCatalog",
+            name: "PureFlow home cleaning referrals",
+            itemListElement: [
+              {
+                "@type": "Offer",
+                itemOffered: {
+                  "@type": "Service",
+                  name: "Air duct cleaning",
+                  description:
+                    "Referral for professional air duct cleaning by a licensed local provider.",
+                },
+                price: "299",
+                priceCurrency: "USD",
+                priceSpecification: {
+                  "@type": "PriceSpecification",
+                  price: "299",
+                  priceCurrency: "USD",
+                  minPrice: "299",
+                  description: "Starting price for standard residential jobs",
+                },
+              },
+              {
+                "@type": "Offer",
+                itemOffered: {
+                  "@type": "Service",
+                  name: "Chimney sweep",
+                  description:
+                    "Referral for chimney sweep and inspection by a licensed local provider.",
+                },
+                price: "149",
+                priceCurrency: "USD",
+                priceSpecification: {
+                  "@type": "PriceSpecification",
+                  price: "149",
+                  priceCurrency: "USD",
+                  minPrice: "149",
+                  description: "Starting price for standard residential jobs",
+                },
+              },
+              {
+                "@type": "Offer",
+                itemOffered: {
+                  "@type": "Service",
+                  name: "Dryer vent cleaning",
+                  description:
+                    "Referral for dryer vent cleaning by a licensed local provider.",
+                },
+                price: "99",
+                priceCurrency: "USD",
+                priceSpecification: {
+                  "@type": "PriceSpecification",
+                  price: "99",
+                  priceCurrency: "USD",
+                  minPrice: "99",
+                  description: "Starting price for standard residential jobs",
+                },
+              },
+            ],
+          },
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Service",
+          name: "Air duct, dryer vent & chimney cleaning",
+          description:
+            "Referral service matching Greater Houston homeowners with licensed air duct, dryer vent, and chimney cleaning providers.",
+          provider: {
+            "@type": "HomeAndConstructionBusiness",
+            name: SITE_NAME,
+            url: `${SITE_ORIGIN}/`,
+            telephone: SITE_PHONE_E164,
+          },
+          areaServed: [houstonGeoCircle, ...areaServedCities],
+          serviceType: [
+            "Air duct cleaning",
+            "Dryer vent cleaning",
+            "Chimney cleaning",
+          ],
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqs.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }),
+      },
+    ],
+  }),
+  component: Index,
+});
+
 function CallButton({
   placement,
   className,
@@ -227,6 +322,47 @@ function CallButton({
     <a href={PHONE_HREF} onClick={() => trackCallClick(placement)} className={className}>
       {children}
     </a>
+  );
+}
+
+function DuctCleanVideo() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const desktop = window.matchMedia("(min-width: 768px)");
+    const syncPlayback = () => {
+      if (desktop.matches) {
+        void video.play().catch(() => {
+          /* autoplay may be blocked; controls remain available */
+        });
+      } else {
+        video.pause();
+      }
+    };
+
+    syncPlayback();
+    desktop.addEventListener("change", syncPlayback);
+    return () => desktop.removeEventListener("change", syncPlayback);
+  }, []);
+
+  return (
+    <video
+      ref={videoRef}
+      className="aspect-[4/5] w-full object-cover sm:aspect-[3/4] lg:aspect-[4/5]"
+      poster="/duct-poster.jpg"
+      muted
+      loop
+      playsInline
+      controls
+      preload="none"
+      aria-label="Before and after air duct cleaning video showing dust removal inside ducts"
+    >
+      <source src="/duct.webm" type="video/webm" />
+      <source src="/duct.mp4" type="video/mp4" />
+    </video>
   );
 }
 
@@ -244,32 +380,34 @@ function BeforeAfter({
   label: string;
 }) {
   return (
-    <div>
-      <p className="mb-3 text-sm font-semibold tracking-wide text-foreground">{label}</p>
-      <div className="grid grid-cols-2 gap-2 sm:gap-3">
-        <figure className="overflow-hidden">
+    <div className="group">
+      <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-primary sm:mb-4">
+        {label}
+      </p>
+      <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
+        <figure className="relative overflow-hidden bg-ink">
           <img
             src={before}
             alt={beforeAlt}
             width={800}
             height={800}
             loading="lazy"
-            className="aspect-square w-full object-cover sm:aspect-[4/3]"
+            className="aspect-[4/5] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] sm:aspect-[5/6]"
           />
-          <figcaption className="mt-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 to-transparent px-2.5 pb-2.5 pt-8 text-[0.65rem] font-bold uppercase tracking-[0.16em] text-ink-foreground/90 sm:px-3 sm:pb-3 sm:text-xs">
             Before
           </figcaption>
         </figure>
-        <figure className="overflow-hidden">
+        <figure className="relative overflow-hidden bg-ink">
           <img
             src={after}
             alt={afterAlt}
             width={800}
             height={800}
             loading="lazy"
-            className="aspect-square w-full object-cover sm:aspect-[4/3]"
+            className="aspect-[4/5] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] sm:aspect-[5/6]"
           />
-          <figcaption className="mt-2 text-xs font-semibold uppercase tracking-[0.14em] text-primary">
+          <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 to-transparent px-2.5 pb-2.5 pt-8 text-[0.65rem] font-bold uppercase tracking-[0.16em] text-flow sm:px-3 sm:pb-3 sm:text-xs">
             After
           </figcaption>
         </figure>
@@ -467,45 +605,63 @@ function Index() {
       </section>
 
       {/* Before / after - proof */}
-      <section id="results" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-12 sm:scroll-mt-28 sm:px-5 sm:py-20">
-        <h2 className="max-w-xl font-display text-[1.75rem] font-bold leading-tight text-foreground sm:text-4xl">
-          What dirty systems look like - and what clean looks like
-        </h2>
-        <p className="mt-3 max-w-xl text-sm text-muted-foreground sm:text-base">
-          Dust, lint, and creosote don&apos;t leave on their own. These are the results homeowners
-          call for.
-        </p>
-        <div className="mt-8 grid gap-10 sm:mt-10 lg:grid-cols-2 lg:gap-12">
-          <BeforeAfter
-            label="Air ducts"
-            before={ductBefore}
-            after={ductAfter}
-            beforeAlt="Dirty air duct filled with dust and debris before cleaning"
-            afterAlt="Clean air duct metal after professional cleaning"
-          />
-          <BeforeAfter
-            label="Air ducts"
-            before={ductBefore2}
-            after={ductAfter2}
-            beforeAlt="Heavily soiled air duct interior before professional cleaning"
-            afterAlt="Spotless galvanized air duct after professional cleaning"
-          />
-          <BeforeAfter
-            label="Fireplace & chimney"
-            before={chimneyBefore}
-            after={chimneyAfter}
-            beforeAlt="Chimney flue with heavy creosote buildup during cleaning"
-            afterAlt="Clean chimney flue after professional sweep"
-          />
-        </div>
-        <div className="mt-8 sm:mt-10">
-          <CallButton
-            placement="results"
-            className="inline-flex w-full items-center justify-center gap-2 bg-primary px-7 py-4 text-base font-bold text-primary-foreground transition-colors hover:bg-ink sm:w-auto"
-          >
-            <Phone className="h-5 w-5" />
-            Call for your free quote
-          </CallButton>
+      <section id="results" className="scroll-mt-24 sm:scroll-mt-28">
+        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-5 sm:py-20">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
+            <div className="max-w-2xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-primary">
+                Before &amp; after
+              </p>
+              <h2 className="mt-3 font-display text-[1.75rem] font-bold leading-tight text-foreground sm:text-4xl">
+                What dirty systems look like - and what clean looks like
+              </h2>
+              <p className="mt-3 max-w-xl text-sm text-muted-foreground sm:text-base">
+                Dust, lint, and creosote don&apos;t leave on their own. These are the results
+                homeowners call for.
+              </p>
+            </div>
+            <CallButton
+              placement="results-top"
+              className="hidden shrink-0 items-center justify-center gap-2 bg-primary px-7 py-4 text-base font-bold text-primary-foreground transition-colors hover:bg-ink lg:inline-flex"
+            >
+              <Phone className="h-5 w-5" />
+              Call for your free quote
+            </CallButton>
+          </div>
+
+          <div className="mt-8 grid gap-8 sm:mt-12 md:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-7">
+            <BeforeAfter
+              label="Air ducts"
+              before={ductBefore}
+              after={ductAfter}
+              beforeAlt="Dirty air duct filled with dust and debris before cleaning"
+              afterAlt="Clean air duct metal after professional cleaning"
+            />
+            <BeforeAfter
+              label="Air ducts"
+              before={ductBefore2}
+              after={ductAfter2}
+              beforeAlt="Heavily soiled air duct interior before professional cleaning"
+              afterAlt="Spotless galvanized air duct after professional cleaning"
+            />
+            <BeforeAfter
+              label="Fireplace & chimney"
+              before={chimneyBefore}
+              after={chimneyAfter}
+              beforeAlt="Chimney flue with heavy creosote buildup during cleaning"
+              afterAlt="Clean chimney flue after professional sweep"
+            />
+          </div>
+
+          <div className="mt-8 sm:mt-10 lg:hidden">
+            <CallButton
+              placement="results"
+              className="inline-flex w-full items-center justify-center gap-2 bg-primary px-7 py-4 text-base font-bold text-primary-foreground transition-colors hover:bg-ink sm:w-auto"
+            >
+              <Phone className="h-5 w-5" />
+              Call for your free quote
+            </CallButton>
+          </div>
         </div>
       </section>
 
@@ -555,18 +711,7 @@ function Index() {
 
           <div className="relative">
             <div className="overflow-hidden bg-ink shadow-[0_24px_60px_-28px_oklch(0.22_0.03_250_/_0.55)]">
-              <video
-                className="aspect-[4/5] w-full object-cover sm:aspect-[3/4] lg:aspect-[4/5]"
-                autoPlay
-                muted
-                loop
-                playsInline
-                controls
-                preload="metadata"
-                aria-label="Before and after air duct cleaning video showing dust removal inside ducts"
-              >
-                <source src="/duct.mp4" type="video/mp4" />
-              </video>
+              <DuctCleanVideo />
             </div>
             <p className="mt-3 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               Air duct cleaning · before → after
