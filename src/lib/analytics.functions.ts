@@ -8,6 +8,7 @@ import {
   getUserAgentShort,
   resolveGeo,
 } from "@/lib/geo.server";
+import { decodeGeoText } from "@/lib/geo-format";
 import { isTargetServiceArea, normalizeUsState, STATE_NAMES } from "@/lib/us-states";
 import {
   campaignLabel,
@@ -354,16 +355,22 @@ export const getAdminAnalytics = createServerFn({ method: "GET" })
 
     const topPlacement = byPlacement[0]?.placement ?? null;
 
-    const liveVisitors = (liveSessionsRes.data ?? []).map((row) => ({
-      id: row.id,
-      city: row.city,
-      region: row.region,
-      country: row.country,
-      last_seen_at: row.last_seen_at,
-      device: row.device,
-      stateCode: normalizeUsState(row.region),
-      inServiceArea: isTargetServiceArea(row.city, normalizeUsState(row.region)),
-    }));
+    const liveVisitors = (liveSessionsRes.data ?? []).map((row) => {
+      const city = decodeGeoText(row.city);
+      const region = decodeGeoText(row.region);
+      const country = decodeGeoText(row.country);
+      const stateCode = normalizeUsState(region);
+      return {
+        id: row.id,
+        city,
+        region,
+        country,
+        last_seen_at: row.last_seen_at,
+        device: row.device,
+        stateCode,
+        inServiceArea: isTargetServiceArea(city, stateCode),
+      };
+    });
 
     const stateCounts = new Map<string, number>();
     const cityCounts = new Map<string, { city: string; region: string | null; count: number }>();
@@ -372,22 +379,24 @@ export const getAdminAnalytics = createServerFn({ method: "GET" })
     let serviceAreaSessions = 0;
 
     for (const row of geoSessionsRes.data ?? []) {
-      const country = (row.country ?? "").toUpperCase();
+      const city = decodeGeoText(row.city);
+      const region = decodeGeoText(row.region);
+      const country = (decodeGeoText(row.country) ?? "").toUpperCase();
       const isUs = country === "US" || country === "USA" || country === "UNITED STATES";
-      const stateCode = normalizeUsState(row.region);
+      const stateCode = normalizeUsState(region);
       if (isUs || stateCode) {
         usSessions += 1;
         if (stateCode) {
           stateCounts.set(stateCode, (stateCounts.get(stateCode) ?? 0) + 1);
           if (stateCode === "TX") texasSessions += 1;
         }
-        if (isTargetServiceArea(row.city, stateCode)) serviceAreaSessions += 1;
+        if (isTargetServiceArea(city, stateCode)) serviceAreaSessions += 1;
       }
-      if (row.city) {
-        const key = `${row.city}|${row.region ?? ""}`;
+      if (city) {
+        const key = `${city}|${region ?? ""}`;
         const prev = cityCounts.get(key);
         if (prev) prev.count += 1;
-        else cityCounts.set(key, { city: row.city, region: row.region, count: 1 });
+        else cityCounts.set(key, { city, region, count: 1 });
       }
     }
 
@@ -435,8 +444,10 @@ export const getAdminAnalytics = createServerFn({ method: "GET" })
       agg.sessions += 1;
       agg.pageViews += row.page_views ?? 1;
       if (row.gclid) agg.gclidSessions += 1;
-      if (row.city) agg.cities.add(row.city);
-      if (row.country) agg.countries.add(row.country);
+      const city = decodeGeoText(row.city);
+      const country = decodeGeoText(row.country);
+      if (city) agg.cities.add(city);
+      if (country) agg.countries.add(country);
       if (row.device) agg.devices.add(row.device);
       if (row.started_at < agg.firstSeen) agg.firstSeen = row.started_at;
       if (row.last_seen_at > agg.lastSeen) agg.lastSeen = row.last_seen_at;
@@ -534,7 +545,12 @@ export const getAdminAnalytics = createServerFn({ method: "GET" })
       },
       daily,
       byPlacement,
-      recentClicks: recentClicksRes.data ?? [],
+      recentClicks: (recentClicksRes.data ?? []).map((row) => ({
+        ...row,
+        city: decodeGeoText(row.city),
+        region: decodeGeoText(row.region),
+        country: decodeGeoText(row.country),
+      })),
       liveVisitors,
       byState,
       byCity,

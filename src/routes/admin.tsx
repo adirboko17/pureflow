@@ -27,6 +27,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { getAdminAnalytics } from "@/lib/analytics.functions";
 import { blockIp, unblockIp } from "@/lib/ip-block.functions";
 import { UsTrafficMap } from "@/components/UsTrafficMap";
+import { formatLocation } from "@/lib/geo-format";
+import {
+  ADMIN_FOCUS_STATE_KEY,
+  STATE_NAMES,
+  US_STATE_OPTIONS,
+} from "@/lib/us-states";
 import type { Session, User } from "@supabase/supabase-js";
 
 export const Route = createFileRoute("/admin")({
@@ -68,10 +74,20 @@ function AdminPage() {
   const [ipBusy, setIpBusy] = useState<string | null>(null);
   const [manualIp, setManualIp] = useState("");
   const [ipActionError, setIpActionError] = useState<string | null>(null);
+  const [focusState, setFocusState] = useState("TX");
 
   const fetchAnalytics = useServerFn(getAdminAnalytics);
   const doBlockIp = useServerFn(blockIp);
   const doUnblockIp = useServerFn(unblockIp);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(ADMIN_FOCUS_STATE_KEY);
+      if (stored && STATE_NAMES[stored]) setFocusState(stored);
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -161,6 +177,22 @@ function AdminPage() {
     }));
   }, [analyticsQuery.data?.daily]);
 
+  const focusStateShare = useMemo(() => {
+    const usSessions = analyticsQuery.data?.geoSummary?.usSessions ?? 0;
+    const stateSessions =
+      analyticsQuery.data?.byState?.find((s) => s.code === focusState)?.count ?? 0;
+    return usSessions > 0 ? stateSessions / usSessions : 0;
+  }, [analyticsQuery.data?.geoSummary?.usSessions, analyticsQuery.data?.byState, focusState]);
+
+  const onFocusStateChange = (code: string) => {
+    setFocusState(code);
+    try {
+      localStorage.setItem(ADMIN_FOCUS_STATE_KEY, code);
+    } catch {
+      /* ignore */
+    }
+  };
+
   if (!authReady) {
     return (
       <div className="flex min-h-dvh items-center justify-center bg-mist">
@@ -221,7 +253,6 @@ function AdminPage() {
   }
 
   const kpis = analyticsQuery.data?.kpis;
-  const geo = analyticsQuery.data?.geoSummary;
   const suspiciousIps = analyticsQuery.data?.suspiciousIps ?? [];
   const recentClicks = analyticsQuery.data?.recentClicks ?? [];
   const blockedIps = analyticsQuery.data?.blockedIps ?? [];
@@ -301,12 +332,30 @@ function AdminPage() {
             {...(kpis ? { hint: `${kpis.clicksYesterday} yesterday` } : {})}
           />
           <Kpi label="CTR today" value={kpis ? formatPct(kpis.ctrToday) : "—"} hint="clicks ÷ sessions" />
-          <Kpi
-            icon={<MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
-            label="Texas share"
-            value={geo ? formatPct(geo.texasShare) : "—"}
-            hint="US · 30d"
-          />
+          <div className="border border-border bg-background p-3 sm:p-4">
+            <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground sm:gap-2 sm:text-xs sm:tracking-[0.12em]">
+              <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span className="truncate">State share</span>
+            </div>
+            <p className="mt-1.5 font-display text-xl font-bold text-foreground sm:mt-2 sm:text-2xl">
+              {analyticsQuery.data ? formatPct(focusStateShare) : "—"}
+            </p>
+            <label className="mt-2 block">
+              <span className="sr-only">Focus state</span>
+              <select
+                value={focusState}
+                onChange={(e) => onFocusStateChange(e.target.value)}
+                className="min-h-9 w-full border border-border bg-background px-2 py-1.5 text-xs font-semibold text-foreground outline-none focus:border-primary"
+              >
+                {US_STATE_OPTIONS.map((s) => (
+                  <option key={s.code} value={s.code}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <p className="mt-1 text-[11px] text-muted-foreground sm:text-xs">of US sessions · 30d</p>
+          </div>
         </div>
 
         {ipActionError ? (
@@ -385,7 +434,7 @@ function AdminPage() {
                     <div className="col-span-2">
                       <dt className="text-muted-foreground">Location</dt>
                       <dd className="text-foreground">
-                        {[row.cities[0], row.countries[0]].filter(Boolean).join(", ") || "—"}
+                        {formatLocation(row.cities[0], null, row.countries[0]) || "—"}
                       </dd>
                     </div>
                     <div>
@@ -465,7 +514,7 @@ function AdminPage() {
                       </td>
                       <td className="px-4 py-3 tabular-nums text-foreground/85">{row.pageViews}</td>
                       <td className="px-4 py-3 text-foreground/85">
-                        {[row.cities[0], row.countries[0]].filter(Boolean).join(", ") || "—"}
+                        {formatLocation(row.cities[0], null, row.countries[0]) || "—"}
                       </td>
                       <td className="px-4 py-3">
                         {row.fromAds ? (
@@ -590,18 +639,19 @@ function AdminPage() {
                   Sessions by state · 30 days · darker = more
                 </p>
               </div>
-              {geo ? (
-                <p className="text-xs text-muted-foreground">
-                  Service area:{" "}
-                  <span className="font-semibold text-foreground">
-                    {formatPct(geo.serviceAreaShare)}
-                  </span>
-                </p>
-              ) : null}
+              <p className="text-xs text-muted-foreground">
+                {STATE_NAMES[focusState] ?? focusState} share:{" "}
+                <span className="font-semibold text-foreground">
+                  {formatPct(focusStateShare)}
+                </span>
+              </p>
             </div>
             <div className="mt-3 -mx-1 overflow-x-auto sm:mx-0 sm:mt-4 sm:overflow-visible">
               <div className="min-w-[280px]">
-                <UsTrafficMap byState={analyticsQuery.data?.byState ?? []} />
+                <UsTrafficMap
+                  byState={analyticsQuery.data?.byState ?? []}
+                  focusState={focusState}
+                />
               </div>
             </div>
           </section>
@@ -633,14 +683,14 @@ function AdminPage() {
                   >
                     <div className="min-w-0">
                       <p className="font-medium break-words text-foreground">
-                        {[v.city, v.stateCode || v.region, v.country].filter(Boolean).join(", ") ||
+                        {formatLocation(v.city, v.stateCode || v.region, v.country) ||
                           "Unknown location"}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {v.device ?? "device?"} · {formatWhen(v.last_seen_at)}
                       </p>
                     </div>
-                    {v.inServiceArea ? (
+                    {v.stateCode === focusState ? (
                       <span className="shrink-0 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-800">
                         Target
                       </span>
@@ -665,10 +715,7 @@ function AdminPage() {
                     className="flex items-center justify-between gap-3 border-b border-border py-2 text-sm last:border-0"
                   >
                     <span className="min-w-0 break-words text-foreground">
-                      {row.city}
-                      {row.region ? (
-                        <span className="text-muted-foreground">, {row.region}</span>
-                      ) : null}
+                      {formatLocation(row.city, row.region) || "—"}
                     </span>
                     <span className="shrink-0 tabular-nums text-muted-foreground">{row.count}</span>
                   </li>
@@ -728,7 +775,7 @@ function AdminPage() {
                       </p>
                     </div>
                     <p className="mt-1 text-foreground/85">
-                      {[row.city, row.region, row.country].filter(Boolean).join(", ") || "—"}
+                      {formatLocation(row.city, row.region, row.country) || "—"}
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground">
                       {row.utm_campaign || (row.gclid ? "gclid" : "direct")} · {row.device ?? "—"}
@@ -765,7 +812,7 @@ function AdminPage() {
                         </td>
                         <td className="px-4 py-3 font-medium text-foreground">{row.placement}</td>
                         <td className="px-4 py-3 text-foreground/85">
-                          {[row.city, row.region, row.country].filter(Boolean).join(", ") || "—"}
+                          {formatLocation(row.city, row.region, row.country) || "—"}
                         </td>
                         <td className="px-4 py-3 text-foreground/85">
                           {row.utm_campaign || (row.gclid ? "gclid" : "—")}

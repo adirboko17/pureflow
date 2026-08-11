@@ -201,3 +201,10 @@ export function isTargetServiceArea(city: string | null | undefined, stateCode: 
   const c = city.toLowerCase();
   return TARGET_METROS.some((m) => c.includes(m));
 }
+
+/** Sorted US states for admin focus-state picker. */
+export const US_STATE_OPTIONS = Object.entries(STATE_NAMES)
+  .map(([code, name]) => ({ code, name }))
+  .sort((a, b) => a.name.localeCompare(b.name));
+
+export const ADMIN_FOCUS_STATE_KEY = "pf_admin_focus_state";

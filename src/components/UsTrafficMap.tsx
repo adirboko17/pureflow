@@ -20,7 +20,13 @@ function fillForCount(count: number, max: number): string {
   return "#1e3a5f";
 }
 
-export function UsTrafficMap({ byState }: { byState: StateCount[] }) {
+export function UsTrafficMap({
+  byState,
+  focusState = "TX",
+}: {
+  byState: StateCount[];
+  focusState?: string;
+}) {
   const [features, setFeatures] = useState<Feature<Geometry>[] | null>(null);
   const [hover, setHover] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -96,9 +102,13 @@ export function UsTrafficMap({ byState }: { byState: StateCount[] }) {
           <path
             key={p.code}
             d={p.d}
-            fill={p.code === "TX" && p.count > 0 ? "#1e3a5f" : fillForCount(p.count, max)}
-            stroke={p.code === hover ? "#0f172a" : "#ffffff"}
-            strokeWidth={p.code === hover ? 2 : 0.8}
+            fill={
+              p.code === focusState && p.count > 0 ? "#1e3a5f" : fillForCount(p.count, max)
+            }
+            stroke={
+              p.code === hover || p.code === focusState ? "#0f172a" : "#ffffff"
+            }
+            strokeWidth={p.code === hover || p.code === focusState ? 2 : 0.8}
             className="cursor-pointer transition-colors"
             onMouseEnter={() => setHover(p.code)}
             onMouseLeave={() => setHover(null)}
@@ -124,7 +134,7 @@ export function UsTrafficMap({ byState }: { byState: StateCount[] }) {
         <p>
           {hoverInfo
             ? `${hoverInfo.name}: ${hoverInfo.count} session${hoverInfo.count === 1 ? "" : "s"}`
-            : "Tap/hover a state · Texas highlighted with traffic"}
+            : `Tap/hover a state · ${STATE_NAMES[focusState] ?? focusState} is your focus`}
         </p>
       </div>
     </div>
