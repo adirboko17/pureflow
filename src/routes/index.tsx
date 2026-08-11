@@ -8,14 +8,6 @@ import {
 } from "@/components/ui/accordion";
 import { Toaster } from "@/components/ui/sonner";
 import { LeadForm } from "@/components/LeadForm";
-import logoImg from "@/assets/pureflow-logo.png";
-import heroImg from "@/assets/hero-texas.jpg";
-import ductBefore from "@/assets/duct1.png";
-import ductAfter from "@/assets/duct2.png";
-import ductBefore2 from "@/assets/duct3.png";
-import ductAfter2 from "@/assets/duct4.png";
-import chimneyBefore from "@/assets/chi2.png";
-import chimneyAfter from "@/assets/chi1.png";
 import {
   Wind,
   Flame,
@@ -33,6 +25,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/phone";
 import { reportCallClick } from "@/lib/analytics-client";
 import { buildHomeJsonLd } from "@/lib/json-ld";
+import { gallerySrc, gallerySrcSet, heroImage, type GalleryKey } from "@/lib/images";
 import { SITE_OG_IMAGE_URL, SITE_ORIGIN } from "@/lib/site";
 
 const navLinks = [
@@ -160,7 +153,15 @@ export const Route = createFileRoute("/")({
       { property: "og:url", content: `${SITE_ORIGIN}/` },
       { property: "og:image", content: SITE_OG_IMAGE_URL },
     ],
-    links: [{ rel: "canonical", href: `${SITE_ORIGIN}/` }],
+    links: [
+      { rel: "canonical", href: `${SITE_ORIGIN}/` },
+      {
+        rel: "preload",
+        as: "image",
+        href: heroImage.preload,
+        type: heroImage.preloadType,
+      },
+    ],
   }),
   component: Index,
 });
@@ -295,6 +296,30 @@ function DuctCleanVideo() {
   );
 }
 
+function GalleryImage({
+  name,
+  alt,
+}: {
+  name: GalleryKey;
+  alt: string;
+}) {
+  return (
+    <picture>
+      <source type="image/avif" srcSet={gallerySrcSet(name, "avif")} sizes="(max-width: 768px) 45vw, 200px" />
+      <source type="image/webp" srcSet={gallerySrcSet(name, "webp")} sizes="(max-width: 768px) 45vw, 200px" />
+      <img
+        src={gallerySrc(name)}
+        alt={alt}
+        width={480}
+        height={360}
+        loading="lazy"
+        decoding="async"
+        className="aspect-[4/5] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] sm:aspect-[5/6]"
+      />
+    </picture>
+  );
+}
+
 function BeforeAfter({
   before,
   after,
@@ -302,8 +327,8 @@ function BeforeAfter({
   afterAlt,
   label,
 }: {
-  before: string;
-  after: string;
+  before: GalleryKey;
+  after: GalleryKey;
   beforeAlt: string;
   afterAlt: string;
   label: string;
@@ -315,28 +340,14 @@ function BeforeAfter({
       </p>
       <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
         <figure className="relative overflow-hidden bg-ink">
-          <img
-            src={before}
-            alt={beforeAlt}
-            width={800}
-            height={800}
-            loading="lazy"
-            className="aspect-[4/5] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] sm:aspect-[5/6]"
-          />
-          <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 to-transparent px-2.5 pb-2.5 pt-8 text-[0.65rem] font-bold uppercase tracking-[0.16em] text-ink-foreground/90 sm:px-3 sm:pb-3 sm:text-xs">
+          <GalleryImage name={before} alt={beforeAlt} />
+          <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/90 to-transparent px-2.5 pb-2.5 pt-8 text-[0.65rem] font-bold uppercase tracking-[0.16em] text-ink-foreground sm:px-3 sm:pb-3 sm:text-xs">
             Before
           </figcaption>
         </figure>
         <figure className="relative overflow-hidden bg-ink">
-          <img
-            src={after}
-            alt={afterAlt}
-            width={800}
-            height={800}
-            loading="lazy"
-            className="aspect-[4/5] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] sm:aspect-[5/6]"
-          />
-          <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 to-transparent px-2.5 pb-2.5 pt-8 text-[0.65rem] font-bold uppercase tracking-[0.16em] text-flow sm:px-3 sm:pb-3 sm:text-xs">
+          <GalleryImage name={after} alt={afterAlt} />
+          <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/90 to-transparent px-2.5 pb-2.5 pt-8 text-[0.65rem] font-bold uppercase tracking-[0.16em] text-flow sm:px-3 sm:pb-3 sm:text-xs">
             After
           </figcaption>
         </figure>
@@ -372,13 +383,21 @@ function Index() {
       <header className="sticky top-0 z-40 border-b border-border/80 bg-background/95 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2.5 sm:gap-4 sm:px-5 sm:py-3">
           <a href="#" className="shrink-0" onClick={() => setMenuOpen(false)}>
-            <img
-              src={logoImg}
-              alt="PureFlow Air & Chimney"
-              width={200}
-              height={106}
-              className="h-11 w-auto object-contain sm:h-14"
-            />
+            <picture>
+              <source
+                type="image/webp"
+                srcSet="/images/logo-160.webp 160w, /images/logo-320.webp 320w"
+                sizes="(min-width: 640px) 160px, 120px"
+              />
+              <img
+                src="/images/logo-320.webp"
+                alt="PureFlow Air & Chimney"
+                width={160}
+                height={85}
+                decoding="async"
+                className="h-11 w-auto object-contain sm:h-14"
+              />
+            </picture>
           </a>
 
           <nav className="hidden items-center gap-6 lg:flex" aria-label="Page sections">
@@ -447,16 +466,22 @@ function Index() {
         ) : null}
       </header>
 
+      <main id="main-content">
       {/* Full-bleed hero - one composition */}
       <section className="relative min-h-[min(72dvh,560px)] overflow-hidden text-ink-foreground sm:min-h-[88vh]">
-        <img
-          src={heroImg}
-          alt="Technician cleaning air vents in a Texas home"
-          width={1920}
-          height={1080}
-          className="absolute inset-0 h-full w-full object-cover object-[72%_center] sm:object-center"
-          fetchPriority="high"
-        />
+        <picture>
+          <source type="image/avif" srcSet={heroImage.avif} sizes="100vw" />
+          <source type="image/webp" srcSet={heroImage.webp} sizes="100vw" />
+          <img
+            src={heroImage.src}
+            alt="Technician cleaning air vents in a Texas home"
+            width={heroImage.width}
+            height={heroImage.height}
+            className="absolute inset-0 h-full w-full object-cover object-[72%_center] sm:object-center"
+            fetchPriority="high"
+            decoding="async"
+          />
+        </picture>
         <div
           className="absolute inset-0"
           style={{
@@ -465,7 +490,7 @@ function Index() {
           }}
         />
         <div className="relative mx-auto flex min-h-[min(72dvh,560px)] max-w-6xl flex-col justify-center px-4 py-8 sm:min-h-[88vh] sm:px-5 sm:py-20">
-          <p className="animate-rise mb-3 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-ink-foreground/80 sm:hidden">
+          <p className="animate-rise mb-3 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-ink-foreground/90 sm:hidden">
             <Clock className="h-3.5 w-3.5" />
             Free quote · 24/7
           </p>
@@ -474,7 +499,7 @@ function Index() {
             <span className="block">Safer chimney.</span>
             <span className="block text-flow">One call away.</span>
           </h1>
-          <p className="animate-rise-delay mt-3 max-w-md text-[0.95rem] leading-relaxed text-ink-foreground/85 sm:mt-5 sm:text-xl">
+          <p className="animate-rise-delay mt-3 max-w-md text-[0.95rem] leading-relaxed text-ink-foreground/90 sm:mt-5 sm:text-xl">
             <span className="sm:hidden">
               Houston - free phone quote in minutes. Licensed local pro.
             </span>
@@ -493,7 +518,7 @@ function Index() {
             </CallButton>
             <a
               href="#results"
-              className="text-center text-sm font-semibold text-ink-foreground/80 underline underline-offset-4 hover:text-ink-foreground sm:text-left"
+              className="text-center text-sm font-semibold text-ink-foreground/90 underline underline-offset-4 hover:text-ink-foreground sm:text-left"
             >
               See before & after
             </a>
@@ -562,22 +587,22 @@ function Index() {
           <div className="mt-8 grid gap-8 sm:mt-12 md:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-7">
             <BeforeAfter
               label="Air ducts"
-              before={ductBefore}
-              after={ductAfter}
+              before="duct1"
+              after="duct2"
               beforeAlt="Dirty air duct filled with dust and debris before cleaning"
               afterAlt="Clean air duct metal after professional cleaning"
             />
             <BeforeAfter
               label="Air ducts"
-              before={ductBefore2}
-              after={ductAfter2}
+              before="duct3"
+              after="duct4"
               beforeAlt="Heavily soiled air duct interior before professional cleaning"
               afterAlt="Spotless galvanized air duct after professional cleaning"
             />
             <BeforeAfter
               label="Fireplace & chimney"
-              before={chimneyBefore}
-              after={chimneyAfter}
+              before="chi2"
+              after="chi1"
               beforeAlt="Chimney flue with heavy creosote buildup during cleaning"
               afterAlt="Clean chimney flue after professional sweep"
             />
@@ -656,7 +681,7 @@ function Index() {
           <h2 className="font-display text-[1.75rem] font-bold sm:text-4xl">
             Services & starting prices
           </h2>
-          <p className="mt-3 max-w-xl text-sm text-ink-foreground/75 sm:text-base">
+          <p className="mt-3 max-w-xl text-sm text-ink-foreground/90 sm:text-base">
             Clear ranges for Google Ads transparency. Final price is confirmed in writing after the
             $29 on-site visit - you approve before any work.
           </p>
@@ -673,7 +698,7 @@ function Index() {
                       <h3 className="text-lg font-bold sm:text-xl">{s.title}</h3>
                       <p className="font-display text-xl font-bold text-flow sm:hidden">{s.price}</p>
                     </div>
-                    <p className="mt-1 text-sm text-ink-foreground/70">{s.desc}</p>
+                    <p className="mt-1 text-sm text-ink-foreground/90">{s.desc}</p>
                   </div>
                 </div>
                 <div className="sm:text-right">
@@ -689,7 +714,7 @@ function Index() {
               </div>
             ))}
           </div>
-          <p className="mt-6 text-xs leading-relaxed text-ink-foreground/60 sm:text-sm">
+          <p className="mt-6 text-xs leading-relaxed text-ink-foreground/85 sm:text-sm">
             Free phone quote · $29 provider visit fee · Written quote before work · No after-hours
             fee to call
           </p>
@@ -821,16 +846,22 @@ function Index() {
           <LeadForm id="bottom-form" />
         </div>
       </section>
+      </main>
 
       <footer className="bg-ink">
-        <div className="mx-auto max-w-6xl space-y-4 px-5 py-12 text-sm text-ink-foreground/70">
-          <img
-            src={logoImg}
-            alt="PureFlow Air & Chimney"
-            width={160}
-            height={85}
-            className="h-10 w-auto object-contain brightness-0 invert"
-          />
+        <div className="mx-auto max-w-6xl space-y-4 px-5 py-12 text-sm text-ink-foreground/90">
+          <picture>
+            <source type="image/webp" srcSet="/images/logo-160.webp 160w, /images/logo-320.webp 320w" sizes="140px" />
+            <img
+              src="/images/logo-320.webp"
+              alt="PureFlow Air & Chimney"
+              width={160}
+              height={85}
+              loading="lazy"
+              decoding="async"
+              className="h-10 w-auto object-contain brightness-0 invert"
+            />
+          </picture>
           <p>
             Greater Houston ·{" "}
             <a
@@ -847,7 +878,7 @@ function Index() {
             visit fee and job pricing are set and charged by the matched provider. Starting prices
             shown are typical market ranges for standard residential jobs.
           </p>
-          <p className="max-w-3xl text-xs">
+          <p className="max-w-3xl text-xs text-ink-foreground/85">
             Demo phone number - replace before publishing ads.{" "}
             <a
               href="mailto:pureflowcostumerservices@gmail.com"

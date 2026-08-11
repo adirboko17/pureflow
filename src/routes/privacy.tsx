@@ -33,7 +33,7 @@ export const Route = createFileRoute("/privacy")({
 
 function Privacy() {
   return (
-    <main className="mx-auto max-w-3xl px-5 py-16">
+    <main id="main-content" className="mx-auto max-w-3xl px-5 py-16">
       <Link to="/" className="text-sm font-semibold text-primary underline underline-offset-4">
         ← Back home
       </Link>

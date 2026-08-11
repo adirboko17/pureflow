@@ -70,13 +70,15 @@
   --secondary: oklch(0.94 0.02 230);
   --secondary-foreground: oklch(0.25 0.04 250);
   --muted: oklch(0.95 0.012 230);
-  --muted-foreground: oklch(0.48 0.03 245);
+  /* Darkened for WCAG AA ≥4.5:1 on near-white backgrounds */
+  --muted-foreground: oklch(0.36 0.035 245);
   --accent: oklch(0.93 0.025 230);
   --accent-foreground: oklch(0.25 0.04 250);
   --ink: oklch(0.22 0.03 250);
   --ink-foreground: oklch(0.97 0.01 230);
   --mist: oklch(0.94 0.02 230);
-  --flow: oklch(0.62 0.06 240);
+  /* Slightly brighter for contrast on ink (#1A2232-range) backgrounds */
+  --flow: oklch(0.72 0.06 240);
   --destructive: oklch(0.55 0.2 25);
   --destructive-foreground: oklch(0.98 0.01 230);
   --border: oklch(0.88 0.02 235);
