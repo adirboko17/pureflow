@@ -243,7 +243,7 @@ function Index() {
               alt="PureFlow Air & Chimney"
               width={200}
               height={106}
-              className="h-9 w-auto object-contain sm:h-14"
+              className="h-11 w-auto object-contain sm:h-14"
             />
           </a>
 
