@@ -27,6 +27,7 @@ import {
   Menu,
   X,
   MapPin,
+  Play,
 } from "lucide-react";
 import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/phone";
 import { reportCallClick } from "@/lib/analytics-client";
@@ -326,43 +327,116 @@ function CallButton({
 }
 
 function DuctCleanVideo() {
+  const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const sourcesAttached = useRef(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const [showPoster, setShowPoster] = useState(true);
+
+  const attachSources = () => {
+    const video = videoRef.current;
+    if (!video || sourcesAttached.current) return;
+    const webm = document.createElement("source");
+    webm.src = "/duct.webm";
+    webm.type = "video/webm";
+    const mp4 = document.createElement("source");
+    mp4.src = "/duct.mp4";
+    mp4.type = "video/mp4";
+    video.append(webm, mp4);
+    video.load();
+    sourcesAttached.current = true;
+  };
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const desktop = window.matchMedia("(min-width: 768px)");
-    const syncPlayback = () => {
-      if (desktop.matches) {
-        void video.play().catch(() => {
-          /* autoplay may be blocked; controls remain available */
-        });
-      } else {
-        video.pause();
-      }
-    };
-
-    syncPlayback();
-    desktop.addEventListener("change", syncPlayback);
-    return () => desktop.removeEventListener("change", syncPlayback);
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const syncMotion = () => setReducedMotion(motionQuery.matches);
+    syncMotion();
+    motionQuery.addEventListener("change", syncMotion);
+    return () => motionQuery.removeEventListener("change", syncMotion);
   }, []);
 
+  useEffect(() => {
+    const container = containerRef.current;
+    const video = videoRef.current;
+    if (!container || !video || reducedMotion) return;
+
+    const onPlaying = () => setShowPoster(false);
+    video.addEventListener("playing", onPlaying);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (!entry) return;
+        if (entry.isIntersecting) {
+          attachSources();
+          void video.play().catch(() => {
+            /* keep poster if autoplay is blocked */
+          });
+        } else {
+          video.pause();
+        }
+      },
+      { rootMargin: "200px 0px", threshold: 0.01 },
+    );
+
+    observer.observe(container);
+    return () => {
+      observer.disconnect();
+      video.removeEventListener("playing", onPlaying);
+    };
+  }, [reducedMotion]);
+
+  const playManually = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    attachSources();
+    const onPlaying = () => {
+      setShowPoster(false);
+      video.removeEventListener("playing", onPlaying);
+    };
+    video.addEventListener("playing", onPlaying);
+    void video.play().catch(() => {
+      video.removeEventListener("playing", onPlaying);
+    });
+  };
+
   return (
-    <video
-      ref={videoRef}
-      className="aspect-[4/5] w-full object-cover sm:aspect-[3/4] lg:aspect-[4/5]"
-      poster="/duct-poster.jpg"
-      muted
-      loop
-      playsInline
-      controls
-      preload="none"
-      aria-label="Before and after air duct cleaning video showing dust removal inside ducts"
-    >
-      <source src="/duct.webm" type="video/webm" />
-      <source src="/duct.mp4" type="video/mp4" />
-    </video>
+    <div ref={containerRef} className="relative overflow-hidden bg-ink">
+      <video
+        ref={videoRef}
+        className="aspect-[4/5] w-full object-cover sm:aspect-[3/4] lg:aspect-[4/5]"
+        muted
+        loop
+        playsInline
+        preload="none"
+        aria-label="Before and after air duct cleaning video showing dust removal inside ducts"
+      />
+      {showPoster ? (
+        <picture className="absolute inset-0">
+          <source srcSet="/duct-poster.webp" type="image/webp" />
+          <img
+            src="/duct-poster.jpg"
+            alt=""
+            width={480}
+            height={860}
+            className="h-full w-full object-cover"
+            aria-hidden
+          />
+        </picture>
+      ) : null}
+      {reducedMotion && showPoster ? (
+        <button
+          type="button"
+          onClick={playManually}
+          className="absolute inset-0 flex items-center justify-center bg-ink/35 text-ink-foreground transition-colors hover:bg-ink/45"
+          aria-label="Play duct cleaning video"
+        >
+          <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg">
+            <Play className="ml-0.5 h-6 w-6 fill-current" aria-hidden />
+          </span>
+        </button>
+      ) : null}
+    </div>
   );
 }
 
@@ -861,7 +935,7 @@ function Index() {
         <Accordion type="single" collapsible className="mt-5 sm:mt-6">
           {faqs.map((f) => (
             <AccordionItem key={f.q} value={f.q}>
-              <AccordionTrigger className="py-4 text-left text-base font-semibold">
+              <AccordionTrigger className="py-4 text-left text-base font-bold">
                 {f.q}
               </AccordionTrigger>
               <AccordionContent className="text-sm text-muted-foreground">{f.a}</AccordionContent>

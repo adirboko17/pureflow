@@ -682,7 +682,7 @@ function AdminPage() {
                     className="flex items-start justify-between gap-3 border-b border-border py-2.5 text-sm last:border-0"
                   >
                     <div className="min-w-0">
-                      <p className="font-medium break-words text-foreground">
+                      <p className="font-semibold break-words text-foreground">
                         {formatLocation(v.city, v.stateCode || v.region, v.country) ||
                           "Unknown location"}
                       </p>
@@ -810,7 +810,7 @@ function AdminPage() {
                         <td className="px-5 py-3 whitespace-nowrap text-foreground/90">
                           {formatWhen(row.created_at)}
                         </td>
-                        <td className="px-4 py-3 font-medium text-foreground">{row.placement}</td>
+                        <td className="px-4 py-3 font-semibold text-foreground">{row.placement}</td>
                         <td className="px-4 py-3 text-foreground/85">
                           {formatLocation(row.city, row.region, row.country) || "—"}
                         </td>
@@ -840,7 +840,7 @@ function AdminPage() {
                     key={row.placement}
                     className="flex items-center justify-between gap-3 border-b border-border py-2.5 text-sm last:border-0"
                   >
-                    <span className="min-w-0 break-words font-medium text-foreground">
+                    <span className="min-w-0 break-words font-semibold text-foreground">
                       {row.placement}
                     </span>
                     <span className="shrink-0 tabular-nums text-muted-foreground">{row.count}</span>
