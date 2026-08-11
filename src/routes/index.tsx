@@ -29,15 +29,11 @@ import {
   MapPin,
   Play,
 } from "lucide-react";
+import { JsonLd } from "@/components/JsonLd";
 import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/phone";
 import { reportCallClick } from "@/lib/analytics-client";
-import {
-  SITE_LOGO_URL,
-  SITE_NAME,
-  SITE_OG_IMAGE_URL,
-  SITE_ORIGIN,
-  SITE_PHONE_E164,
-} from "@/lib/site";
+import { buildHomeJsonLd } from "@/lib/json-ld";
+import { SITE_OG_IMAGE_URL, SITE_ORIGIN } from "@/lib/site";
 
 const navLinks = [
   { href: "#results", label: "Results" },
@@ -71,23 +67,6 @@ const serviceAreas = [
     ],
   },
 ] as const;
-
-const areaServedCities = serviceAreas.flatMap((area) =>
-  area.cities.map((city) => ({
-    "@type": "City" as const,
-    name: `${city}, Texas`,
-  })),
-);
-
-const houstonGeoCircle = {
-  "@type": "GeoCircle" as const,
-  geoMidpoint: {
-    "@type": "GeoCoordinates" as const,
-    latitude: 29.7604,
-    longitude: -95.3698,
-  },
-  geoRadius: "72420",
-};
 
 function trackCallClick(placement: string) {
   try {
@@ -155,6 +134,9 @@ const faqs = [
   },
 ];
 
+/** One consolidated @graph for HomeAndConstructionBusiness + Service + FAQPage. */
+const homeJsonLd = buildHomeJsonLd(faqs);
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -179,133 +161,6 @@ export const Route = createFileRoute("/")({
       { property: "og:image", content: SITE_OG_IMAGE_URL },
     ],
     links: [{ rel: "canonical", href: `${SITE_ORIGIN}/` }],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "HomeAndConstructionBusiness",
-          name: SITE_NAME,
-          url: `${SITE_ORIGIN}/`,
-          telephone: SITE_PHONE_E164,
-          image: SITE_LOGO_URL,
-          logo: SITE_LOGO_URL,
-          description:
-            "Independent referral service connecting Greater Houston homeowners with licensed air duct cleaning, dryer vent and chimney providers. PureFlow does not perform the work.",
-          email: "pureflowcostumerservices@gmail.com",
-          priceRange: "$$",
-          areaServed: [houstonGeoCircle, ...areaServedCities],
-          openingHoursSpecification: {
-            "@type": "OpeningHoursSpecification",
-            dayOfWeek: [
-              "Monday",
-              "Tuesday",
-              "Wednesday",
-              "Thursday",
-              "Friday",
-              "Saturday",
-              "Sunday",
-            ],
-            opens: "00:00",
-            closes: "23:59",
-          },
-          hasOfferCatalog: {
-            "@type": "OfferCatalog",
-            name: "PureFlow home cleaning referrals",
-            itemListElement: [
-              {
-                "@type": "Offer",
-                itemOffered: {
-                  "@type": "Service",
-                  name: "Air duct cleaning",
-                  description:
-                    "Referral for professional air duct cleaning by a licensed local provider.",
-                },
-                price: "299",
-                priceCurrency: "USD",
-                priceSpecification: {
-                  "@type": "PriceSpecification",
-                  price: "299",
-                  priceCurrency: "USD",
-                  minPrice: "299",
-                  description: "Starting price for standard residential jobs",
-                },
-              },
-              {
-                "@type": "Offer",
-                itemOffered: {
-                  "@type": "Service",
-                  name: "Chimney sweep",
-                  description:
-                    "Referral for chimney sweep and inspection by a licensed local provider.",
-                },
-                price: "149",
-                priceCurrency: "USD",
-                priceSpecification: {
-                  "@type": "PriceSpecification",
-                  price: "149",
-                  priceCurrency: "USD",
-                  minPrice: "149",
-                  description: "Starting price for standard residential jobs",
-                },
-              },
-              {
-                "@type": "Offer",
-                itemOffered: {
-                  "@type": "Service",
-                  name: "Dryer vent cleaning",
-                  description:
-                    "Referral for dryer vent cleaning by a licensed local provider.",
-                },
-                price: "99",
-                priceCurrency: "USD",
-                priceSpecification: {
-                  "@type": "PriceSpecification",
-                  price: "99",
-                  priceCurrency: "USD",
-                  minPrice: "99",
-                  description: "Starting price for standard residential jobs",
-                },
-              },
-            ],
-          },
-        }),
-      },
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Service",
-          name: "Air duct, dryer vent & chimney cleaning",
-          description:
-            "Referral service matching Greater Houston homeowners with licensed air duct, dryer vent, and chimney cleaning providers.",
-          provider: {
-            "@type": "HomeAndConstructionBusiness",
-            name: SITE_NAME,
-            url: `${SITE_ORIGIN}/`,
-            telephone: SITE_PHONE_E164,
-          },
-          areaServed: [houstonGeoCircle, ...areaServedCities],
-          serviceType: [
-            "Air duct cleaning",
-            "Dryer vent cleaning",
-            "Chimney cleaning",
-          ],
-        }),
-      },
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: faqs.map((f) => ({
-            "@type": "Question",
-            name: f.q,
-            acceptedAnswer: { "@type": "Answer", text: f.a },
-          })),
-        }),
-      },
-    ],
   }),
   component: Index,
 });
@@ -495,6 +350,7 @@ function Index() {
 
   return (
     <div className="min-h-screen bg-background pb-[calc(5.25rem+env(safe-area-inset-bottom))] md:pb-0">
+      <JsonLd data={homeJsonLd} />
       <Toaster position="top-center" />
 
       {/* Slim utility bar - desktop only (saves mobile chrome) */}
