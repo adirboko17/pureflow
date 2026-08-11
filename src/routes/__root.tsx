@@ -126,8 +126,23 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
+        {/* Critical fonts before first paint — must precede @font-face in critical CSS. */}
+        <link
+          rel="preload"
+          href="/fonts/manrope-latin-400-normal.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/fonts/sora-latin-800-normal.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
         <style dangerouslySetInnerHTML={{ __html: CRITICAL_CSS }} />
-        {/* HeadContent first so homepage hero preload (fetchpriority=high) starts ASAP. */}
+        {/* HeadContent next so homepage hero image preload starts ASAP. */}
         <HeadContent />
         {/* Non-blocking full CSS: media=print until load. Inline onload (not React onLoad)
             so it works before hydration — React onLoad can miss a cached/early load. */}

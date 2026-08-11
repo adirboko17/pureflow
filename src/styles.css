@@ -1,8 +1,4 @@
-@import "@fontsource/manrope/latin-400.css";
-@import "@fontsource/manrope/latin-600.css";
-@import "@fontsource/manrope/latin-700.css";
-@import "@fontsource/sora/latin-700.css";
-@import "@fontsource/sora/latin-800.css";
+@import "./styles/fonts.css";
 
 @import "tailwindcss" source(none);
 @source "../src";
@@ -12,8 +8,8 @@
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
-  --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Sora", "Sora Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Manrope", "Manrope Fallback", ui-sans-serif, system-ui, sans-serif;
   --color-ink: var(--ink);
   --color-ink-foreground: var(--ink-foreground);
   --color-mist: var(--mist);

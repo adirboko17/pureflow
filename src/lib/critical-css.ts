@@ -1,5 +1,10 @@
-/** Above-the-fold CSS inlined in <head> so FCP does not wait on the full stylesheet. */
+/** Above-the-fold CSS inlined in <head> so FCP does not wait on the full stylesheet.
+ *  Includes critical @font-face + metric-matched fallbacks so fonts start with first paint. */
 export const CRITICAL_CSS = `
+@font-face{font-family:"Manrope";font-style:normal;font-weight:400;font-display:swap;src:url("/fonts/manrope-latin-400-normal.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Manrope Fallback";font-style:normal;font-weight:400;src:local("Arial");ascent-override:102.74%;descent-override:28.91%;line-gap-override:0%;size-adjust:103.76%}
+@font-face{font-family:"Sora";font-style:normal;font-weight:800;font-display:swap;src:url("/fonts/sora-latin-800-normal.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Sora Fallback";font-style:normal;font-weight:800;src:local("Arial Bold");ascent-override:89%;descent-override:26.61%;line-gap-override:0%;size-adjust:108.98%}
 :root{
   --radius:.5rem;
   --background:oklch(0.985 0.008 230);
@@ -11,8 +16,8 @@ export const CRITICAL_CSS = `
   --ink:oklch(0.22 0.03 250);
   --ink-foreground:oklch(0.97 0.01 230);
   --flow:oklch(0.72 0.06 240);
-  --font-sans:"Manrope",ui-sans-serif,system-ui,sans-serif;
-  --font-display:"Sora",ui-sans-serif,system-ui,sans-serif;
+  --font-sans:"Manrope","Manrope Fallback",ui-sans-serif,system-ui,sans-serif;
+  --font-display:"Sora","Sora Fallback",ui-sans-serif,system-ui,sans-serif;
   --color-background:var(--background);
   --color-foreground:var(--foreground);
   --color-primary:var(--primary);
