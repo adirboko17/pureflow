@@ -54,7 +54,7 @@ export function LeadForm({ id }: { id?: string; variant?: "light" | "dark" }) {
   };
 
   const fieldClass =
-    "w-full border border-border bg-background px-4 py-3.5 text-base text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary min-h-12";
+    "w-full min-h-12 border border-solid border-[color:var(--border)] bg-[color:var(--secondary,var(--background))] px-4 py-3.5 text-base text-foreground shadow-none outline-none transition-colors placeholder:text-muted-foreground focus:border-primary";
   const labelClass = "text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground";
 
   if (status === "done") {
@@ -76,9 +76,12 @@ export function LeadForm({ id }: { id?: string; variant?: "light" | "dark" }) {
   return (
     <form id={id} onSubmit={onSubmit} className="border border-border bg-background p-6 sm:p-8">
       <h2 className="font-display text-xl font-bold text-foreground">Request a callback</h2>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Or skip the form -{" "}
-        <a href={PHONE_HREF} className="font-semibold text-primary underline underline-offset-2">
+      <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+        Or skip the form —{" "}
+        <a
+          href={PHONE_HREF}
+          className="font-semibold text-primary underline underline-offset-2 hover:text-ink"
+        >
           call {PHONE_DISPLAY}
         </a>{" "}
         now.
@@ -95,6 +98,7 @@ export function LeadForm({ id }: { id?: string; variant?: "light" | "dark" }) {
             required
             placeholder="Jordan Smith"
             className={fieldClass}
+            autoComplete="name"
           />
         </div>
 
@@ -110,6 +114,7 @@ export function LeadForm({ id }: { id?: string; variant?: "light" | "dark" }) {
               required
               placeholder="(346) 296-0176"
               className={fieldClass}
+              autoComplete="tel"
             />
           </div>
           <div className="space-y-1.5">
@@ -122,8 +127,9 @@ export function LeadForm({ id }: { id?: string; variant?: "light" | "dark" }) {
               inputMode="numeric"
               pattern="[0-9]{5}"
               required
-              placeholder="75201"
+              placeholder="77001"
               className={fieldClass}
+              autoComplete="postal-code"
             />
           </div>
         </div>
@@ -154,21 +160,24 @@ export function LeadForm({ id }: { id?: string; variant?: "light" | "dark" }) {
       <button
         type="submit"
         disabled={status === "sending"}
-        className="mt-6 inline-flex w-full items-center justify-center gap-2 bg-ink px-6 py-4 text-base font-bold text-ink-foreground transition-colors hover:bg-primary disabled:opacity-70"
+        className="mt-6 flex w-full items-center justify-center gap-2 bg-primary px-6 py-4 text-base font-bold text-primary-foreground transition-colors hover:bg-ink disabled:opacity-70"
       >
         {status === "sending" ? <Loader2 className="h-5 w-5 animate-spin" /> : null}
         Request Callback
       </button>
 
-      <a
-        href={PHONE_HREF}
-        className="mt-3 inline-flex w-full items-center justify-center gap-2 border border-border px-6 py-3.5 text-sm font-bold text-foreground hover:border-primary"
-      >
-        <Phone className="h-4 w-4 text-primary" />
-        Prefer to call? {PHONE_DISPLAY}
-      </a>
+      <p className="mt-3 text-center text-sm text-muted-foreground">
+        Prefer to call?{" "}
+        <a
+          href={PHONE_HREF}
+          className="inline-flex items-center gap-1.5 font-semibold text-foreground underline underline-offset-2 hover:text-primary"
+        >
+          <Phone className="h-3.5 w-3.5" />
+          {PHONE_DISPLAY}
+        </a>
+      </p>
 
-      <p className="mt-4 flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
+      <p className="mt-5 flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
         <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
         <span>
           By submitting, you agree PureFlow Air &amp; Chimney - an independent referral service -

@@ -171,7 +171,11 @@ function CallButton({
   children: ReactNode;
 }) {
   return (
-    <a href={PHONE_HREF} onClick={() => trackCallClick(placement)} className={className}>
+    <a
+      href={PHONE_HREF}
+      onClick={() => trackCallClick(placement)}
+      className={["text-primary-foreground", className].filter(Boolean).join(" ")}
+    >
       {children}
     </a>
   );
@@ -809,31 +813,35 @@ export function Index() {
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="mx-auto max-w-3xl scroll-mt-24 px-4 py-12 sm:scroll-mt-28 sm:px-5 sm:py-16">
-        <h2 className="font-display text-[1.75rem] font-bold text-foreground sm:text-3xl">
-          Questions before you call
-        </h2>
-        <Accordion type="single" collapsible className="mt-5 sm:mt-6">
-          {faqs.map((f) => (
-            <AccordionItem key={f.q} value={f.q}>
-              <AccordionTrigger className="py-4 text-left text-base font-bold">
-                {f.q}
-              </AccordionTrigger>
-              <AccordionContent className="text-sm text-muted-foreground">{f.a}</AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+      <section id="faq" className="scroll-mt-24 px-4 py-12 sm:scroll-mt-28 sm:px-5 sm:py-16">
+        <div className="mx-auto max-w-3xl">
+          <h2 className="font-display text-[1.75rem] font-bold text-foreground sm:text-3xl">
+            Questions before you call
+          </h2>
+          <Accordion type="single" collapsible className="mt-5 w-full sm:mt-6">
+            {faqs.map((f) => (
+              <AccordionItem key={f.q} value={f.q}>
+                <AccordionTrigger className="gap-4 py-4 text-left text-base font-bold">
+                  {f.q}
+                </AccordionTrigger>
+                <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
+                  {f.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
       </section>
 
       {/* Bottom form - secondary */}
       <section id="request" className="bg-mist">
-        <div className="mx-auto grid max-w-5xl gap-8 px-4 py-12 sm:gap-10 sm:px-5 sm:py-16 lg:grid-cols-[1fr_1.05fr] lg:items-start">
-          <div>
+        <div className="mx-auto grid max-w-5xl gap-8 px-4 py-12 sm:gap-10 sm:px-5 sm:py-16 lg:grid-cols-[1fr_1.05fr] lg:items-start lg:gap-12">
+          <div className="lg:pt-2">
             <h2 className="font-display text-[1.75rem] font-bold text-foreground sm:text-3xl">
               Can&apos;t talk right now?
             </h2>
-            <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-              Leave a callback request. For the fastest booking, call - it&apos;s free, 24/7.
+            <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
+              Leave a callback request. For the fastest booking, call — it&apos;s free, 24/7.
             </p>
             <CallButton
               placement="form-aside"
