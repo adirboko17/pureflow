@@ -131,6 +131,9 @@ const faqs = [
 const homeJsonLd = buildHomeJsonLd(faqs);
 
 export const Route = createFileRoute("/")({
+  // Keep homepage in the SSR/reference bundle — lazyRouteComponent delays
+  // painting the hero <img> until the route chunk hydrates (~1.8s render delay).
+  codeSplitGroupings: [],
   head: () => ({
     meta: [
       {
@@ -153,18 +156,7 @@ export const Route = createFileRoute("/")({
       { property: "og:url", content: `${SITE_ORIGIN}/` },
       { property: "og:image", content: SITE_OG_IMAGE_URL },
     ],
-    links: [
-      { rel: "canonical", href: `${SITE_ORIGIN}/` },
-      {
-        rel: "preload",
-        as: "image",
-        href: heroImage.preload,
-        type: heroImage.preloadType,
-        fetchPriority: "high",
-        imageSrcSet: heroImage.avif,
-        imageSizes: heroImage.sizes,
-      },
-    ],
+    links: [{ rel: "canonical", href: `${SITE_ORIGIN}/` }],
   }),
   component: Index,
 });
@@ -359,7 +351,8 @@ function BeforeAfter({
   );
 }
 
-function Index() {
+// Exported so the automatic code-splitter keeps this in the reference bundle (SSR HTML).
+export function Index() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -470,7 +463,8 @@ function Index() {
       </header>
 
       <main id="main-content">
-      {/* Full-bleed hero - one composition */}
+      {/* Full-bleed hero - one composition. No entrance animations: opacity-0
+          fill-mode delays LCP paint on text/CTAs; keep image paint-ready in SSR HTML. */}
       <section className="relative min-h-[min(72dvh,560px)] overflow-hidden text-ink-foreground sm:min-h-[88vh]">
         <picture>
           <source type="image/avif" srcSet={heroImage.avif} sizes={heroImage.sizes} />
@@ -484,7 +478,8 @@ function Index() {
             srcSet={heroImage.webp}
             className="absolute inset-0 h-full w-full object-cover object-[72%_center] sm:object-center"
             fetchPriority="high"
-            decoding="async"
+            decoding="sync"
+            loading="eager"
           />
         </picture>
         <div
@@ -495,16 +490,16 @@ function Index() {
           }}
         />
         <div className="relative mx-auto flex min-h-[min(72dvh,560px)] max-w-6xl flex-col justify-center px-4 py-8 sm:min-h-[88vh] sm:px-5 sm:py-20">
-          <p className="animate-rise mb-3 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-ink-foreground/90 sm:hidden">
+          <p className="mb-3 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-ink-foreground/90 sm:hidden">
             <Clock className="h-3.5 w-3.5" />
             Free quote · 24/7
           </p>
-          <h1 className="animate-rise max-w-xl font-display text-[2.15rem] font-extrabold leading-[1.06] sm:text-5xl lg:text-6xl">
+          <h1 className="max-w-xl font-display text-[2.15rem] font-extrabold leading-[1.06] sm:text-5xl lg:text-6xl">
             <span className="block">Cleaner air.</span>
             <span className="block">Safer chimney.</span>
             <span className="block text-flow">One call away.</span>
           </h1>
-          <p className="animate-rise-delay mt-3 max-w-md text-[0.95rem] leading-relaxed text-ink-foreground/90 sm:mt-5 sm:text-xl">
+          <p className="mt-3 max-w-md text-[0.95rem] leading-relaxed text-ink-foreground/90 sm:mt-5 sm:text-xl">
             <span className="sm:hidden">
               Houston - free phone quote in minutes. Licensed local pro.
             </span>
@@ -513,10 +508,10 @@ function Index() {
               licensed local pro.
             </span>
           </p>
-          <div className="animate-rise-delay-2 mt-5 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:items-center">
+          <div className="mt-5 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:items-center">
             <CallButton
               placement="hero"
-              className="call-pulse inline-flex w-full items-center justify-center gap-3 bg-primary px-6 py-4 text-lg font-bold text-primary-foreground sm:w-auto sm:px-8"
+              className="inline-flex w-full items-center justify-center gap-3 bg-primary px-6 py-4 text-lg font-bold text-primary-foreground sm:w-auto sm:px-8"
             >
               <Phone className="h-5 w-5" />
               Call {PHONE_DISPLAY}

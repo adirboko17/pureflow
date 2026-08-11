@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SessionTracker } from "@/components/SessionTracker";
 import { SITE_OG_IMAGE_URL } from "@/lib/site";
 import { CRITICAL_CSS } from "@/lib/critical-css";
+import { heroImage } from "@/lib/images";
 
 function NotFoundComponent() {
   return (
@@ -126,6 +127,16 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
+        {/* LCP hero first — before fonts/critical CSS — to cut resource load delay. */}
+        <link
+          rel="preload"
+          as="image"
+          href={heroImage.preload}
+          type={heroImage.preloadType}
+          fetchPriority="high"
+          imageSrcSet={heroImage.avif}
+          imageSizes={heroImage.sizes}
+        />
         {/* Critical fonts before first paint — must precede @font-face in critical CSS. */}
         <link
           rel="preload"
@@ -142,7 +153,6 @@ function RootShell({ children }: { children: ReactNode }) {
           crossOrigin="anonymous"
         />
         <style dangerouslySetInnerHTML={{ __html: CRITICAL_CSS }} />
-        {/* HeadContent next so homepage hero image preload starts ASAP. */}
         <HeadContent />
         {/* Non-blocking full CSS: media=print until load. Inline onload (not React onLoad)
             so it works before hydration — React onLoad can miss a cached/early load. */}
