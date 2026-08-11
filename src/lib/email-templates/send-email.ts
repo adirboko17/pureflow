@@ -1,92 +1,81 @@
-import * as React from 'react'
-import { render } from '@react-email/render'
-import { EmailAPIError, sendLovableEmail } from '@lovable.dev/email-js'
-import { TEMPLATES } from './registry'
+import * as React from "react";
+import { render } from "@react-email/render";
+import { Resend } from "resend";
+import { TEMPLATES } from "./registry";
 
-// Server-only: reads LOVABLE_API_KEY. Never import from client components.
+// Server-only: reads RESEND_API_KEY. Never import from client components.
 
-// Configuration baked in at scaffold time
-const SITE_NAME = "airglow-leads-hub"
-// SENDER_DOMAIN is the verified sender subdomain FQDN (e.g., "notify.example.com").
-// It MUST match the subdomain delegated to Lovable's nameservers. NEVER use the root domain.
-const SENDER_DOMAIN = "notify.pureflow-services.com"
-// FROM_DOMAIN is the domain shown in the From: header (e.g., "example.com").
-// Can be the root domain when display_from_root is enabled — this is cosmetic only.
-const FROM_DOMAIN = "pureflow-services.com"
+const FROM_NAME = "PureFlow Air & Chimney";
+/** Must be on a domain verified in Resend. */
+const FROM_EMAIL = "noreply@pureflow-services.com";
 
 export type SendTemplateEmailResult =
   | { sent: true }
-  | { sent: false; reason: 'recipient_suppressed' }
+  | { sent: false; reason: "recipient_suppressed" };
 
 export interface SendTemplateEmailOptions {
-  templateData?: Record<string, any>
+  templateData?: Record<string, unknown>;
   /** Dedupes retries of the same logical send; defaults to a random UUID (no dedupe). */
-  idempotencyKey?: string
-  replyTo?: string
+  idempotencyKey?: string;
+  replyTo?: string;
 }
 
 /**
- * Renders a registered template and sends it through Lovable's managed email
- * API. Suppression, retries, and rate limits are enforced by Lovable
- * server-side. A suppressed recipient is an expected outcome
- * ({ sent: false }); any other failure throws — EmailAPIError exposes
- * .code and .status for branching.
+ * Renders a registered template and sends it through Resend.
  */
 export async function sendTemplateEmail(
   templateName: string,
-  to: string,
-  options: SendTemplateEmailOptions = {}
+  to: string | string[],
+  options: SendTemplateEmailOptions = {},
 ): Promise<SendTemplateEmailResult> {
-  const apiKey = process.env['LOVABLE_API_KEY']
+  const apiKey = process.env["RESEND_API_KEY"];
   if (!apiKey) {
-    throw new Error('LOVABLE_API_KEY is not configured')
+    throw new Error("RESEND_API_KEY is not configured");
   }
 
-  const template = TEMPLATES[templateName]
+  const template = TEMPLATES[templateName];
   if (!template) {
     throw new Error(
-      `Template '${templateName}' not found. Available: ${Object.keys(TEMPLATES).join(', ')}`
-    )
+      `Template '${templateName}' not found. Available: ${Object.keys(TEMPLATES).join(", ")}`,
+    );
   }
 
   // Template-level `to` takes precedence — notification templates always
-  // send to their fixed address.
-  const recipient = template.to || to
-  if (!recipient) {
-    throw new Error('Recipient is required (the template defines no fixed recipient)')
+  // send to their fixed address(es).
+  const recipient = template.to ?? to;
+  if (!recipient || (Array.isArray(recipient) && recipient.length === 0)) {
+    throw new Error("Recipient is required (the template defines no fixed recipient)");
   }
 
-  const templateData = options.templateData ?? {}
-  const element = React.createElement(template.component, templateData)
-  const html = await render(element)
-  const text = await render(element, { plainText: true })
+  const toList = (Array.isArray(recipient) ? recipient : [recipient])
+    .map((email) => email.trim())
+    .filter(Boolean);
+
+  const templateData = options.templateData ?? {};
+  const element = React.createElement(template.component, templateData);
+  const html = await render(element);
+  const text = await render(element, { plainText: true });
   const subject =
-    typeof template.subject === 'function'
+    typeof template.subject === "function"
       ? template.subject(templateData)
-      : template.subject
+      : template.subject;
 
-  try {
-    await sendLovableEmail(
-      {
-        to: recipient,
-        from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
-        sender_domain: SENDER_DOMAIN,
-        subject,
-        html,
-        text,
-        purpose: 'transactional',
-        label: templateName,
-        idempotency_key: options.idempotencyKey || crypto.randomUUID(),
-        ...(options.replyTo ? { reply_to: options.replyTo } : {}),
-      },
-      { apiKey, sendUrl: process.env['LOVABLE_SEND_URL'] }
-    )
-  } catch (error) {
-    if (error instanceof EmailAPIError && error.code === 'recipient_suppressed') {
-      return { sent: false, reason: 'recipient_suppressed' }
-    }
-    throw error
+  const resend = new Resend(apiKey);
+  const { error } = await resend.emails.send({
+    from: `${FROM_NAME} <${FROM_EMAIL}>`,
+    to: toList,
+    subject,
+    html,
+    text,
+    replyTo: options.replyTo,
+    headers: options.idempotencyKey
+      ? { "X-Entity-Ref-ID": options.idempotencyKey }
+      : undefined,
+  });
+
+  if (error) {
+    throw new Error(`Resend send failed: ${error.message}`);
   }
 
-  return { sent: true }
+  return { sent: true };
 }
