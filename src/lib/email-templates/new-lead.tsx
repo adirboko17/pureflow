@@ -46,7 +46,7 @@ const NewLeadEmail = ({ name, phone, zip, service, source, submittedAt }: Props)
           <Text style={row}><span style={label}>Submitted: </span>{submittedAt ?? '—'}</Text>
         </Section>
         <Hr />
-        <Text style={sub}>Call the customer back to schedule the $45 technician visit.</Text>
+        <Text style={sub}>Call the customer back to schedule the $29 technician visit.</Text>
       </Container>
     </Body>
   </Html>

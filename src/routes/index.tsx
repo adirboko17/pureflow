@@ -26,7 +26,6 @@ import {
   BadgeCheck,
   Menu,
   X,
-  Star,
   MapPin,
 } from "lucide-react";
 import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/phone";
@@ -34,7 +33,7 @@ import { reportCallClick } from "@/lib/analytics-client";
 
 const navLinks = [
   { href: "#results", label: "Results" },
-  { href: "#reviews", label: "Reviews" },
+  { href: "#see-it", label: "See it" },
   { href: "#pricing", label: "Pricing" },
   { href: "#how-it-works", label: "How it works" },
   { href: "#areas", label: "Areas" },
@@ -42,19 +41,6 @@ const navLinks = [
 ] as const;
 
 const serviceAreas = [
-  {
-    region: "Dallas–Fort Worth",
-    cities: [
-      "Dallas",
-      "Fort Worth",
-      "Plano",
-      "Frisco",
-      "Arlington",
-      "Irving",
-      "Garland",
-      "McKinney",
-    ],
-  },
   {
     region: "Greater Houston",
     cities: [
@@ -66,6 +52,14 @@ const serviceAreas = [
       "Cypress",
       "Spring",
       "Pasadena",
+      "Humble",
+      "Tomball",
+      "Missouri City",
+      "League City",
+      "Friendswood",
+      "Baytown",
+      "Conroe",
+      "Richmond",
     ],
   },
 ] as const;
@@ -76,87 +70,6 @@ const areaServedSchema = serviceAreas.flatMap((area) =>
     name: `${city}, Texas`,
   })),
 );
-
-const reviewAvatarColors = [
-  "bg-[#4285F4]",
-  "bg-[#EA4335]",
-  "bg-[#FBBC04]",
-  "bg-[#34A853]",
-  "bg-[#FF6D01]",
-  "bg-[#46BDC6]",
-] as const;
-
-const reviews = [
-  {
-    name: "Melissa R.",
-    city: "Plano, TX",
-    service: "Air duct cleaning",
-    when: "2 weeks ago",
-    quote:
-      "Called in the morning and had someone out the same week. The tech showed me photos inside the ducts - night and day difference. House already feels less dusty.",
-  },
-  {
-    name: "James T.",
-    city: "Katy, TX",
-    service: "Chimney sweep",
-    when: "3 weeks ago",
-    quote:
-      "Straight answer on price before they started. Fireplace was overdue for a clean - they were careful, on time, and left everything tidy.",
-  },
-  {
-    name: "Priya S.",
-    city: "Dallas, TX",
-    service: "Ducts + dryer vent",
-    when: "1 month ago",
-    quote:
-      "I liked that PureFlow explained the $45 visit upfront. No pressure after the quote. We booked the ducts and dryer vent and both came out spotless.",
-  },
-  {
-    name: "Carlos M.",
-    city: "The Woodlands, TX",
-    service: "Air duct cleaning",
-    when: "1 month ago",
-    quote:
-      "Easy phone quote, clear communication, and the crew wore shoe covers. AC airflow feels stronger. Would call again next season.",
-  },
-  {
-    name: "Hannah L.",
-    city: "Frisco, TX",
-    service: "Chimney inspection",
-    when: "2 months ago",
-    quote:
-      "We needed a chimney check before winter. Honest about what was needed and what wasn't. Refreshing compared to other companies that upsell everything.",
-  },
-  {
-    name: "Derek W.",
-    city: "Houston, TX",
-    service: "Air duct cleaning",
-    when: "2 months ago",
-    quote:
-      "Allergy season hits hard here. After the cleaning the musty smell near the vents was gone. Booking by phone was the fastest part.",
-  },
-] as const;
-
-function ReviewStars({ size = "md", label }: { size?: "sm" | "md"; label?: string }) {
-  const sizeClass = size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4";
-  return (
-    <div className="flex gap-0.5" aria-label={label}>
-      {Array.from({ length: 5 }).map((_, i) => (
-        <Star key={i} className={`${sizeClass} fill-[#FBBC04] text-[#FBBC04]`} />
-      ))}
-    </div>
-  );
-}
-
-function reviewInitials(name: string) {
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join("")
-    .toUpperCase();
-}
 
 function trackCallClick(placement: string) {
   try {
@@ -180,21 +93,21 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       {
-        title: "Dallas & Houston Air Duct & Chimney Cleaning | PureFlow",
+        title: "Houston Air Duct & Chimney Cleaning | PureFlow",
       },
       {
         name: "description",
         content:
-          "Call PureFlow 24/7 for air duct & chimney cleaning in Dallas and Houston. Free phone quote, clear starting prices, $45 on-site visit, written quote before work.",
+          "Call PureFlow 24/7 for air duct & chimney cleaning in Houston and surrounding areas. Free phone quote, clear starting prices, $29 on-site visit, written quote before work.",
       },
       {
         property: "og:title",
-        content: "Dallas & Houston Air Duct & Chimney Cleaning | PureFlow",
+        content: "Houston Air Duct & Chimney Cleaning | PureFlow",
       },
       {
         property: "og:description",
         content:
-          "Call 24/7 for a free phone quote. Licensed local providers for air ducts, dryer vents & chimneys in Dallas and Houston.",
+          "Call 24/7 for a free phone quote. Licensed local providers for air ducts, dryer vents & chimney sweeps in Greater Houston.",
       },
       { property: "og:url", content: "https://pureflow-services.com/" },
     ],
@@ -209,7 +122,7 @@ export const Route = createFileRoute("/")({
           url: "https://pureflow-services.com/",
           telephone: "+1-346-296-0176",
           description:
-            "Independent referral service connecting Dallas and Houston homeowners with licensed air duct cleaning, dryer vent and chimney providers.",
+            "Independent referral service connecting Greater Houston homeowners with licensed air duct cleaning, dryer vent and chimney providers.",
           email: "pureflowcostumerservices@gmail.com",
           areaServed: areaServedSchema,
         }),
@@ -221,7 +134,7 @@ export const Route = createFileRoute("/")({
           "@type": "Service",
           name: "Air duct, dryer vent & chimney cleaning",
           description:
-            "Referral service matching Dallas–Fort Worth and Greater Houston homeowners with licensed air duct, dryer vent, and chimney cleaning providers.",
+            "Referral service matching Greater Houston homeowners with licensed air duct, dryer vent, and chimney cleaning providers.",
           provider: {
             "@type": "Organization",
             name: "PureFlow Air & Chimney",
@@ -277,15 +190,15 @@ const services = [
 const faqs = [
   {
     q: "Is the phone quote really free?",
-    a: "Yes. Calling PureFlow is free 24/7. If you schedule an on-site visit, the independent provider charges a flat $45 for inspection and a written quote.",
+    a: "Yes. Calling PureFlow is free 24/7. If you schedule an on-site visit, the independent provider charges a flat $29 for inspection and a written quote.",
   },
   {
-    q: "What does the $45 visit cover?",
+    q: "What does the $29 visit cover?",
     a: "Travel, inspection, and a written quote from the licensed provider. No obligation to book the job. Charged by the provider, not PureFlow.",
   },
   {
     q: "Why list starting prices?",
-    a: "For fee transparency on on-site home services. “From” prices are typical starting ranges for standard residential jobs in Dallas and Houston. Final price is confirmed in writing before work begins.",
+    a: "For fee transparency on on-site home services. “From” prices are typical starting ranges for standard residential jobs in Greater Houston. Final price is confirmed in writing before work begins.",
   },
   {
     q: "Are estimates binding?",
@@ -293,11 +206,11 @@ const faqs = [
   },
   {
     q: "Is PureFlow doing the work?",
-    a: "No. PureFlow is an independent referral service. We match you with licensed local providers in Dallas or Houston who perform and price the work.",
+    a: "No. PureFlow is an independent referral service. We match you with licensed local providers in Greater Houston who perform and price the work.",
   },
   {
     q: "Which areas do you cover?",
-    a: "Dallas–Fort Worth (Dallas, Fort Worth, Plano, Frisco, Arlington, Irving, Garland, McKinney, and nearby) and Greater Houston (Houston, Katy, Sugar Land, The Woodlands, Pearland, Cypress, Spring, Pasadena, and nearby). Call with your ZIP and we confirm coverage before scheduling.",
+    a: "Greater Houston within about 45 miles of the city - including Houston, Katy, Sugar Land, The Woodlands, Pearland, Cypress, Spring, Pasadena, Humble, Tomball, Missouri City, League City, Friendswood, Baytown, Conroe, Richmond, and nearby suburbs. Call with your ZIP and we confirm coverage before scheduling.",
   },
 ];
 
@@ -377,7 +290,7 @@ function Index() {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-2 text-sm">
           <span className="inline-flex items-center gap-1.5 opacity-90">
             <Clock className="h-3.5 w-3.5" />
-            Answered 24/7 · Dallas & Houston
+            Answered 24/7 · Greater Houston
           </span>
           <CallButton
             placement="topbar"
@@ -495,10 +408,10 @@ function Index() {
           </h1>
           <p className="animate-rise-delay mt-3 max-w-md text-[0.95rem] leading-relaxed text-ink-foreground/85 sm:mt-5 sm:text-xl">
             <span className="sm:hidden">
-              Dallas & Houston - free phone quote in minutes. Licensed local pro.
+              Houston - free phone quote in minutes. Licensed local pro.
             </span>
             <span className="hidden sm:inline">
-              Dallas & Houston homeowners - get a free phone quote in minutes. We connect you with a
+              Houston homeowners - get a free phone quote in minutes. We connect you with a
               licensed local pro.
             </span>
           </p>
@@ -526,7 +439,7 @@ function Index() {
           <div className="grid grid-cols-3 gap-2 sm:hidden">
             {[
               { icon: Phone, t: "24/7 quote" },
-              { icon: FileText, t: "$45 visit" },
+              { icon: FileText, t: "$29 visit" },
               { icon: BadgeCheck, t: "Licensed" },
             ].map((item) => (
               <div key={item.t} className="flex flex-col items-center gap-1.5 px-1 py-2 text-center">
@@ -538,8 +451,8 @@ function Index() {
           <div className="hidden gap-8 sm:grid sm:grid-cols-3">
             {[
               { icon: Phone, t: "Free phone quote 24/7", d: "Someone answers - nights and weekends too." },
-              { icon: FileText, t: "$45 visit, then written price", d: "No work starts until you approve." },
-              { icon: BadgeCheck, t: "Licensed local providers", d: "Dallas–Fort Worth & Greater Houston." },
+              { icon: FileText, t: "$29 visit, then written price", d: "No work starts until you approve." },
+              { icon: BadgeCheck, t: "Licensed local providers", d: "Greater Houston and surrounding areas." },
             ].map((item) => (
               <div key={item.t} className="flex gap-3">
                 <item.icon className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
@@ -596,61 +509,68 @@ function Index() {
         </div>
       </section>
 
-      {/* Reviews */}
-      <section id="reviews" className="scroll-mt-24 border-y border-border bg-mist sm:scroll-mt-28">
-        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-5 sm:py-20">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-            <div className="max-w-xl">
-              <h2 className="font-display text-[1.75rem] font-bold text-foreground sm:text-4xl">
-                Homeowners who called PureFlow
-              </h2>
-              <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-                What Dallas and Houston area homeowners say after duct and chimney service.
-              </p>
-            </div>
-            <div className="flex items-center gap-2 text-foreground">
-              <ReviewStars />
-              <p className="text-sm font-semibold">5-star experiences · TX</p>
-            </div>
-          </div>
-
-          <div className="-mx-4 mt-8 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:mt-10 sm:grid sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 lg:grid-cols-3 lg:pb-0">
-            {reviews.map((review, index) => (
-              <article
-                key={`${review.name}-${review.city}`}
-                className="w-[85%] shrink-0 snap-start rounded-2xl border border-border bg-background p-5 shadow-sm sm:w-auto sm:p-6"
-              >
-                <div className="flex items-start gap-3">
-                  <div
-                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white ${reviewAvatarColors[index % reviewAvatarColors.length]}`}
-                    aria-hidden
-                  >
-                    {reviewInitials(review.name)}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-semibold text-foreground">{review.name}</p>
-                    <p className="text-xs text-muted-foreground">{review.when}</p>
-                    <div className="mt-2">
-                      <ReviewStars size="sm" label="5 out of 5 stars" />
-                    </div>
-                  </div>
-                </div>
-                <p className="mt-4 text-sm leading-relaxed text-foreground/90">{review.quote}</p>
-                <p className="mt-4 text-xs text-muted-foreground">
-                  {review.city} · {review.service}
-                </p>
-              </article>
-            ))}
-          </div>
-
-          <div className="mt-8 sm:mt-10">
+      {/* Live duct clean - video proof */}
+      <section
+        id="see-it"
+        aria-labelledby="see-it-heading"
+        className="scroll-mt-24 border-y border-border bg-mist sm:scroll-mt-28"
+      >
+        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:gap-12 sm:px-5 sm:py-20 lg:grid-cols-2 lg:gap-16">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-primary">
+              Real cleaning on camera
+            </p>
+            <h2
+              id="see-it-heading"
+              className="mt-3 font-display text-[1.75rem] font-bold leading-tight text-foreground sm:text-4xl"
+            >
+              Watch dirty ducts turn clean
+            </h2>
+            <p className="mt-4 max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
+              This is what a professional air duct clean looks like from the inside - years of dust
+              and buildup pulled out so your system can breathe again.
+            </p>
+            <ul className="mt-6 space-y-3 text-sm text-foreground/90 sm:text-base">
+              <li className="flex items-start gap-2.5">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
+                Less dust settling on furniture and vents
+              </li>
+              <li className="flex items-start gap-2.5">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
+                Stronger airflow from your AC
+              </li>
+              <li className="flex items-start gap-2.5">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
+                Written price after a $29 on-site visit
+              </li>
+            </ul>
             <CallButton
-              placement="reviews"
-              className="inline-flex w-full items-center justify-center gap-2 bg-primary px-7 py-4 text-base font-bold text-primary-foreground transition-colors hover:bg-ink sm:w-auto"
+              placement="see-it"
+              className="mt-8 inline-flex w-full items-center justify-center gap-2 bg-primary px-7 py-4 text-base font-bold text-primary-foreground transition-colors hover:bg-ink sm:w-auto"
             >
               <Phone className="h-5 w-5" />
-              Join them - call for a free quote
+              Call for your free quote
             </CallButton>
+          </div>
+
+          <div className="relative">
+            <div className="overflow-hidden bg-ink shadow-[0_24px_60px_-28px_oklch(0.22_0.03_250_/_0.55)]">
+              <video
+                className="aspect-[4/5] w-full object-cover sm:aspect-[3/4] lg:aspect-[4/5]"
+                autoPlay
+                muted
+                loop
+                playsInline
+                controls
+                preload="metadata"
+                aria-label="Before and after air duct cleaning video showing dust removal inside ducts"
+              >
+                <source src="/duct.mp4" type="video/mp4" />
+              </video>
+            </div>
+            <p className="mt-3 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              Air duct cleaning · before → after
+            </p>
           </div>
         </div>
       </section>
@@ -663,7 +583,7 @@ function Index() {
           </h2>
           <p className="mt-3 max-w-xl text-sm text-ink-foreground/75 sm:text-base">
             Clear ranges for Google Ads transparency. Final price is confirmed in writing after the
-            $45 on-site visit - you approve before any work.
+            $29 on-site visit - you approve before any work.
           </p>
           <div className="mt-8 divide-y divide-ink-foreground/15 border-y border-ink-foreground/15 sm:mt-10">
             {services.map((s) => (
@@ -695,7 +615,7 @@ function Index() {
             ))}
           </div>
           <p className="mt-6 text-xs leading-relaxed text-ink-foreground/60 sm:text-sm">
-            Free phone quote · $45 provider visit fee · Written quote before work · No after-hours
+            Free phone quote · $29 provider visit fee · Written quote before work · No after-hours
             fee to call
           </p>
         </div>
@@ -718,7 +638,7 @@ function Index() {
             },
             {
               n: "02",
-              t: "On-site visit - $45",
+              t: "On-site visit - $29",
               d: "A licensed local provider inspects and puts the full price in writing.",
             },
             {
@@ -759,10 +679,10 @@ function Index() {
             Service areas in Texas
           </h2>
           <p className="mt-3 max-w-2xl text-sm text-muted-foreground sm:text-base">
-            PureFlow connects homeowners across Dallas–Fort Worth and Greater Houston. Call with your
-            ZIP and we confirm coverage before scheduling.
+            PureFlow connects homeowners across Greater Houston, within about 45 miles of the city. Call
+            with your ZIP and we confirm coverage before scheduling.
           </p>
-          <div className="mt-8 grid gap-8 md:grid-cols-2 md:gap-10">
+          <div className="mt-8">
             {serviceAreas.map((area) => (
               <div key={area.region}>
                 <div className="flex items-center gap-2">
@@ -771,7 +691,7 @@ function Index() {
                     {area.region}
                   </h3>
                 </div>
-                <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-foreground/90 sm:text-base">
+                <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-foreground/90 sm:grid-cols-3 sm:text-base">
                   {area.cities.map((city) => (
                     <li key={city} className="flex items-center gap-2">
                       <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary/50" aria-hidden />
@@ -780,7 +700,7 @@ function Index() {
                   ))}
                 </ul>
                 <p className="mt-3 text-xs text-muted-foreground sm:text-sm">
-                  Plus nearby suburbs in the {area.region} metro.
+                  Plus nearby suburbs within about 45 miles of Houston.
                 </p>
               </div>
             ))}
@@ -837,7 +757,7 @@ function Index() {
             className="h-10 w-auto object-contain brightness-0 invert"
           />
           <p>
-            Dallas–Fort Worth & Greater Houston ·{" "}
+            Greater Houston ·{" "}
             <a
               href={PHONE_HREF}
               className="font-semibold text-ink-foreground underline underline-offset-4"
@@ -848,7 +768,7 @@ function Index() {
           </p>
           <p className="max-w-3xl">
             PureFlow Air & Chimney is an independent lead referral service. We connect homeowners
-            with local, licensed providers and do not perform the work ourselves. The $45 on-site
+            with local, licensed providers and do not perform the work ourselves. The $29 on-site
             visit fee and job pricing are set and charged by the matched provider. Starting prices
             shown are typical market ranges for standard residential jobs.
           </p>

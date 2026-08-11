@@ -7,12 +7,12 @@ export const Route = createFileRoute("/terms")({
       {
         name: "description",
         content:
-          "Terms for using the PureFlow Air & Chimney referral platform connecting Dallas and Houston homeowners with licensed duct and chimney providers.",
+          "Terms for using the PureFlow Air & Chimney referral platform connecting Greater Houston homeowners with licensed duct and chimney providers.",
       },
       { property: "og:title", content: "Terms of Service | PureFlow Air & Chimney" },
       {
         property: "og:description",
-        content: "Terms for using our Dallas & Houston home service referral platform.",
+        content: "Terms for using our Greater Houston home service referral platform.",
       },
     ],
   }),
@@ -36,7 +36,7 @@ function Terms() {
         <h2 className="text-lg font-bold text-foreground">Pricing</h2>
         <p>
           Calling PureFlow for a phone quote is free 24/7. Submitting a request on this site is also
-          free. The on-site visit carries a flat $45 fee, which is charged by the independent
+          free. The on-site visit carries a flat $29 fee, which is charged by the independent
           licensed provider who visits you, not by PureFlow Air & Chimney. That fee covers travel,
           inspection and a written quote. Starting prices shown on the site are typical ranges for
           standard residential jobs; the price of any work itself is set solely by the provider in
@@ -56,8 +56,8 @@ function Terms() {
         </p>
         <h2 className="text-lg font-bold text-foreground">Service area</h2>
         <p>
-          We currently accept requests from homeowners in the Dallas–Fort Worth and Greater Houston
-          areas of Texas. Availability of a matched provider is not guaranteed for every ZIP code or
+          We currently accept requests from homeowners in Greater Houston, within about 45 miles of
+          the city. Availability of a matched provider is not guaranteed for every ZIP code or
           timeframe.
         </p>
         <h2 className="text-lg font-bold text-foreground">Contact us</h2>

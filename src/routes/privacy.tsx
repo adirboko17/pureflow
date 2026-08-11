@@ -7,7 +7,7 @@ export const Route = createFileRoute("/privacy")({
       {
         name: "description",
         content:
-          "How PureFlow Air & Chimney collects, uses and shares the information you submit through our Dallas & Houston quote request form.",
+          "How PureFlow Air & Chimney collects, uses and shares the information you submit through our Greater Houston quote request form.",
       },
       { property: "og:title", content: "Privacy Policy | PureFlow Air & Chimney" },
       {
@@ -65,7 +65,7 @@ function Privacy() {
         </p>
         <h2 className="text-lg font-bold text-foreground">Contact</h2>
         <p>
-          PureFlow Air &amp; Chimney - Dallas–Fort Worth and Greater Houston, Texas.{" "}
+          PureFlow Air &amp; Chimney - Greater Houston, Texas.{" "}
           <a href="mailto:pureflowcostumerservices@gmail.com" className="underline underline-offset-2">
             pureflowcostumerservices@gmail.com
           </a>

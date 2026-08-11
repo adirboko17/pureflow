@@ -78,27 +78,27 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Dallas & Houston Air Duct & Chimney Cleaning | PureFlow" },
+      { title: "Houston Air Duct & Chimney Cleaning | PureFlow" },
       {
         name: "description",
         content:
-          "PureFlow matches Dallas & Houston homeowners with licensed air duct and chimney pros. Call 24/7 for a free phone quote. Clear starting prices, $45 on-site visit, written quote before work.",
+          "Call PureFlow 24/7 for air duct & chimney cleaning in Houston and surrounding areas. Free phone quote, clear starting prices, $29 on-site visit, written quote before work.",
       },
       { name: "author", content: "PureFlow Air & Chimney" },
       { name: "google-site-verification", content: "35pHNNttUpRVYXDEvlqlz5EZN6JF376J2NO6FD8JXiA" },
-      { property: "og:title", content: "Dallas & Houston Air Duct & Chimney Cleaning | PureFlow" },
+      { property: "og:title", content: "Houston Air Duct & Chimney Cleaning | PureFlow" },
       {
         property: "og:description",
         content:
-          "Call 24/7 for a free phone quote. Licensed local providers for air duct cleaning, dryer vents & chimney sweeps in Dallas and Houston.",
+          "Call 24/7 for a free phone quote. Licensed local providers for air ducts, dryer vents & chimney sweeps in Greater Houston.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Dallas & Houston Air Duct & Chimney Cleaning | PureFlow" },
+      { name: "twitter:title", content: "Houston Air Duct & Chimney Cleaning | PureFlow" },
       {
         name: "twitter:description",
         content:
-          "Call 24/7 for a free phone quote. Licensed local providers for air duct cleaning, dryer vents & chimney sweeps in Dallas and Houston.",
+          "Call 24/7 for a free phone quote. Licensed local providers for air ducts, dryer vents & chimney sweeps in Greater Houston.",
       },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ddcd32fa-bfc7-4308-89f1-809049c7825e/id-preview-60688c59--cb8820b5-8d43-4c77-af67-03e5fc89ac32.lovable.app-1785845660480.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ddcd32fa-bfc7-4308-89f1-809049c7825e/id-preview-60688c59--cb8820b5-8d43-4c77-af67-03e5fc89ac32.lovable.app-1785845660480.png" },

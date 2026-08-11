@@ -165,14 +165,6 @@ export const FIPS_TO_CODE: Record<string, string> = {
 };
 
 const TARGET_METROS = [
-  "dallas",
-  "fort worth",
-  "plano",
-  "frisco",
-  "arlington",
-  "irving",
-  "garland",
-  "mckinney",
   "houston",
   "katy",
   "sugar land",
@@ -181,8 +173,14 @@ const TARGET_METROS = [
   "cypress",
   "spring",
   "pasadena",
-  "austin",
-  "san antonio",
+  "humble",
+  "tomball",
+  "missouri city",
+  "league city",
+  "friendswood",
+  "baytown",
+  "conroe",
+  "richmond",
 ];
 
 export function normalizeUsState(region: string | null | undefined): string | null {
