@@ -24,6 +24,7 @@ import {
 import { JsonLd } from "@/components/JsonLd";
 import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/phone";
 import { reportCallClick } from "@/lib/analytics-client";
+import { trackPhoneClick } from "@/lib/trackPhoneClick";
 import { buildHomeJsonLd } from "@/lib/json-ld";
 import { gallerySrc, gallerySrcSet, heroImage, type GalleryKey } from "@/lib/images";
 import { SITE_OG_IMAGE_URL, SITE_ORIGIN } from "@/lib/site";
@@ -63,16 +64,7 @@ const serviceAreas = [
 
 function trackCallClick(placement: string) {
   try {
-    (window as unknown as { gtag?: (...a: unknown[]) => void }).gtag?.(
-      "event",
-      "conversion",
-      {
-        send_to: "AW-18371071580/0_0rCLK-gtwcENycgbhE",
-        value: 1.0,
-        currency: "USD",
-        event_label: placement,
-      },
-    );
+    trackPhoneClick();
   } catch {
     /* analytics must never block the call */
   }
@@ -874,6 +866,7 @@ export function Index() {
             Greater Houston ·{" "}
             <a
               href={PHONE_HREF}
+              onClick={trackPhoneClick}
               className="font-semibold text-ink-foreground underline underline-offset-4"
             >
               {PHONE_DISPLAY}

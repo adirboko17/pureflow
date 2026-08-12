@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { submitLead } from "@/lib/leads.functions";
 import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/phone";
+import { trackPhoneClick } from "@/lib/trackPhoneClick";
 
 export const SERVICES = [
   "Air Duct Cleaning",
@@ -34,15 +35,14 @@ export function LeadForm({ id }: { id?: string; variant?: "light" | "dark" }) {
       });
       setStatus("done");
       try {
-        (window as unknown as { gtag?: (...a: unknown[]) => void }).gtag?.(
-          "event",
-          "conversion",
-          {
+        // Form lead conversion (separate from phone-click send_to).
+        if (typeof window.gtag === "function") {
+          window.gtag("event", "conversion", {
             send_to: "AW-18371071580/0_0rCLK-gtwcENycgbhE",
             value: 1.0,
             currency: "USD",
-          },
-        );
+          });
+        }
       } catch {
         /* analytics must never block the flow */
       }
@@ -64,7 +64,11 @@ export function LeadForm({ id }: { id?: string; variant?: "light" | "dark" }) {
         <h2 className="mt-4 font-display text-xl font-bold text-foreground">Request received</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           We&apos;ll call you back. For faster service, call{" "}
-          <a href={PHONE_HREF} className="font-semibold text-primary underline underline-offset-2">
+          <a
+            href={PHONE_HREF}
+            onClick={trackPhoneClick}
+            className="font-semibold text-primary underline underline-offset-2"
+          >
             {PHONE_DISPLAY}
           </a>{" "}
           anytime - free, 24/7.
@@ -80,6 +84,7 @@ export function LeadForm({ id }: { id?: string; variant?: "light" | "dark" }) {
         Or skip the form —{" "}
         <a
           href={PHONE_HREF}
+          onClick={trackPhoneClick}
           className="font-semibold text-primary underline underline-offset-2 hover:text-ink"
         >
           call {PHONE_DISPLAY}
@@ -170,6 +175,7 @@ export function LeadForm({ id }: { id?: string; variant?: "light" | "dark" }) {
         Prefer to call?{" "}
         <a
           href={PHONE_HREF}
+          onClick={trackPhoneClick}
           className="inline-flex items-center gap-1.5 font-semibold text-foreground underline underline-offset-2 hover:text-primary"
         >
           <Phone className="h-3.5 w-3.5" />
